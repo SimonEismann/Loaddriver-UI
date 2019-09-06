@@ -27,7 +27,8 @@ blocks:
       - name: Build slave
         commands:
           - checkout
-          - docker build -t loaddriver-slave ./load-generator
+          - docker pull simoneismann/loaddriver-slave || true
+          - docker build --cache-from simoneismann/loaddriver-slave -t loaddriver-slave ./load-generator
           - docker tag loaddriver-slave simoneismann/loaddriver-slave
           - docker login -u="$username" -p="$password"
           - docker push simoneismann/loaddriver-slave
