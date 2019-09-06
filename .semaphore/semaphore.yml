@@ -1,0 +1,27 @@
+version: v1.0
+name: Docker build
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: "Build"
+    task:
+      secrets:
+        - name: Dockerhub
+      jobs:
+      - name: Build master
+        commands:
+          - checkout
+          - docker build -t loaddriver-master ./load-director
+          - docker tag loaddriver-master simoneismann/loaddriver-master
+          - docker login -u="$username" -p="$password"
+          - docker push simoneismann/loaddriver-master
+      - name: Build slave
+        commands:
+          - checkout
+          - docker build -t loaddriver-slave ./load-generator
+          - docker tag loaddriver-slave simoneismann/loaddriver-slave
+          - docker login -u="$username" -p="$password"
+          - docker push simoneismann/loaddriver-slave
