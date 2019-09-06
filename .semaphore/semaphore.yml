@@ -1,12 +1,12 @@
 version: v1.0
-name: Docker build
+name: Build loaddriver UI 
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
 
 blocks:
-  - name: "Build"
+  - name: "Build & push master"
     task:
       secrets:
         - name: Dockerhub
@@ -18,6 +18,11 @@ blocks:
           - docker tag loaddriver-master simoneismann/loaddriver-master
           - docker login -u="$username" -p="$password"
           - docker push simoneismann/loaddriver-master
+  - name: "Build & push slave"
+    task:
+      secrets:
+        - name: Dockerhub
+      jobs:
       - name: Build slave
         commands:
           - checkout
