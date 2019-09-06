@@ -1,0 +1,11 @@
+version: "3"
+services:
+  master:
+    image: descartesresearch/web-load-driver
+    ports:
+      - "80:80"
+  slave:
+    image: descartesresearch/web-load-generator
+    environment:
+      REGISTRY_HOST: "master"
+      REGISTRY_PORT: "80"
