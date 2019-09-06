@@ -14,7 +14,8 @@ blocks:
       - name: Build master
         commands:
           - checkout
-          - docker build -t loaddriver-master ./load-director
+          - docker pull simoneismann/loaddriver-master || true
+          - docker build --cache-from simoneismann/loaddriver-master -t loaddriver-master ./load-director
           - docker tag loaddriver-master simoneismann/loaddriver-master
           - docker login -u="$username" -p="$password"
           - docker push simoneismann/loaddriver-master
