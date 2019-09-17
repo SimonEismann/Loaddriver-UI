@@ -1,11 +1,11 @@
 version: "3"
 services:
   master:
-    image: descartesresearch/web-load-driver
+    image: simoneismann/loaddriver-master
     ports:
       - "80:80"
   slave:
-    image: descartesresearch/web-load-generator
+    image: simoneismann/loaddriver-slave
     environment:
       REGISTRY_HOST: "master"
       REGISTRY_PORT: "80"

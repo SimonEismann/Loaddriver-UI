@@ -20,6 +20,7 @@ func handleStop(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		io.WriteString(w, "Error occured while killing process!")
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	io.WriteString(w, "Load Generator successfully stopped!")
@@ -44,6 +45,7 @@ func startLoadGenerator() {
 				return
 			}
 			logger.WithError(err).Println("Error occured while killing process!")
+			return
 		}
 	}
 }
