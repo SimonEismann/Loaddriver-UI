@@ -14,22 +14,22 @@ var ()
 
 const ()
 
-type location string
+type IP string
 
-type registryEntry struct {
-	location   location
-	lastUpdate time.Time
+type RegistryEntry struct {
+	Location   IP
+	LastUpdate time.Time
 }
 
 type Registry struct {
 	log    *logrus.Entry
-	slaves map[location]registryEntry
+	Slaves map[IP]RegistryEntry
 }
 
 func New() *Registry {
 	return &Registry{
 		log:    logger.NewLogger().WithField("component", "registry"),
-		slaves: make(map[location]registryEntry),
+		Slaves: make(map[IP]RegistryEntry),
 	}
 }
 
@@ -40,7 +40,7 @@ func (r *Registry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if req.Method == http.MethodPut {
-		r.Put(location(req.RemoteAddr))
+		r.Put(IP(req.RemoteAddr))
 		w.WriteHeader(http.StatusOK)
 		return
 	}
@@ -48,27 +48,27 @@ func (r *Registry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func (r *Registry) getCurrentSlaves() []location {
-	result := make([]location, len(r.slaves))
+func (r *Registry) getCurrentSlaves() []IP {
+	result := make([]IP, len(r.Slaves))
 	i := 0
-	for k, _ := range r.slaves {
+	for k, _ := range r.Slaves {
 		result[i] = k
 		i++
 	}
 	return result
 }
 
-func (r *Registry) Put(slave location) {
-	slaveIP := location(strings.Split(string(slave), ":")[0])
-	_, ok := r.slaves[slaveIP]
+func (r *Registry) Put(slave IP) {
+	slaveIP := IP(strings.Split(string(slave), ":")[0])
+	_, ok := r.Slaves[slaveIP]
 	if ok {
 		r.log.Infof("Slave reregistered under %s", slaveIP)
 	} else {
 		r.log.Infof("New slave registered under %s", slaveIP)
 	}
-	r.slaves[slaveIP] = registryEntry{
-		location:   slaveIP,
-		lastUpdate: time.Now(),
+	r.Slaves[slaveIP] = RegistryEntry{
+		Location:   slaveIP,
+		LastUpdate: time.Now(),
 	}
 }
 
@@ -80,14 +80,14 @@ func (r *Registry) StartCleanUpRoutine() {
 
 func (r *Registry) cleanUp() {
 	now := time.Now()
-	var toDelete []location
-	for key, entry := range r.slaves {
-		if now.After(entry.lastUpdate.Add(5 * time.Minute)) {
+	var toDelete []IP
+	for key, entry := range r.Slaves {
+		if now.After(entry.LastUpdate.Add(5 * time.Minute)) {
 			r.log.Infof("Removing slave from registry located under %s due to failing heartbeat", key)
 			toDelete = append(toDelete, key)
 		}
 	}
 	for _, v := range toDelete {
-		delete(r.slaves, v)
+		delete(r.Slaves, v)
 	}
 }

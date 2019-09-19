@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"load-director/api"
 	"load-director/registry"
 	"load-director/shared"
 	"net/http"
@@ -16,18 +16,17 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/sync/semaphore"
 )
 
 const ()
 
 var (
-	sem         = semaphore.NewWeighted(1)
-	killChan    = make(chan struct{}, 1)
-	killSuccess = make(chan error, 1)
-	jobs        []job
-	jobQueue    = make(chan job)
-	logger      = &logrus.Logger{
+	killChan      = make(chan struct{}, 1)
+	killSuccess   = make(chan error, 1)
+	jobs          []job
+	jobQueue      = make(chan job)
+	slaveRegistry = registry.New()
+	logger        = &logrus.Logger{
 		Out:       os.Stderr,
 		Formatter: new(logrus.JSONFormatter),
 		Hooks:     make(logrus.LevelHooks),
@@ -45,13 +44,15 @@ type job struct {
 func main() {
 	log := logger.WithField("func", "main")
 	r := mux.NewRouter()
-	r.HandleFunc("", handleRoot)
-	r.HandleFunc("/", handleRoot)
+	r.HandleFunc("", api.PrintDescription)
+	r.HandleFunc("/", api.PrintDescription)
+	r.HandleFunc("/jobs/current", handleStop).Methods(http.MethodDelete)
+	r.HandleFunc("/jobs/default", handleJobPostDefault).Methods(http.MethodPost)
 	r.HandleFunc("/jobs", handleJobPost).Methods(http.MethodPost)
-	registry := registry.New()
-	go registry.StartCleanUpRoutine()
+	r.HandleFunc("/jobs", handleJobsGet).Methods(http.MethodGet)
+	go slaveRegistry.StartCleanUpRoutine()
 	go jobConsumer()
-	r.Handle("/registry", registry)
+	r.Handle("/registry", slaveRegistry)
 	log.Info("Started server")
 	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{"Authorization", "X-Requested-With", "Content-Type"}),
@@ -59,67 +60,67 @@ func main() {
 		handlers.AllowCredentials())(r))
 }
 
-func handleJobPost(w http.ResponseWriter, req *http.Request) {
-	b, err := ioutil.ReadAll(req.Body)
-	defer req.Body.Close()
+func handleJobsGet(w http.ResponseWriter, req *http.Request) {
+	resp, err := json.MarshalIndent(jobs, "", "\t")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func handleJobPost(w http.ResponseWriter, req *http.Request) {
 	var postedJob job
-	err = json.Unmarshal(b, &postedJob)
+	err := json.NewDecoder(req.Body).Decode(&postedJob)
+	defer req.Body.Close()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	postedJob.Id = time.Now().Format("01-02-2006_03:04")
+	postedJob.Id = time.Now().Format("01-02-2006_03:04:05")
 	jobs = append(jobs, postedJob)
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
 }
 
-func handleRoot(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	resp, err := json.MarshalIndent(map[string]string{
-		"GET /scripts":             "Lists the available script file names",
-		"GET /scripts/{fileName}":  "Returns the script with the specified file name",
-		"POST /jobs":               "Queue an experiment with all registered slaves",
-		"GET /jobs":                "Lists all jobs",
-		"GET /jobs/{jobId}":        "Get the current status of the specified job",
-		"GET /jobs/{jobId}/result": "Returns the result of the job",
-		"DELETE /api/jobs/current": "Force stop the currently running load generation",
-		"GET /registry":            "List all currently registered slaves",
-	}, "", "\t")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+func handleJobPostDefault(w http.ResponseWriter, req *http.Request) {
+	var allSlaves []string
+	for _, slave := range slaveRegistry.Slaves {
+		allSlaves = append(allSlaves, string(slave.Location))
 	}
-	w.Write(resp)
+	newJob := job{
+		Id:            time.Now().Format("01-02-2006 03:04:05"),
+		Slaves:        allSlaves,
+		ScriptName:    "teastore_browse.lua",
+		IntensityFile: "warmedUpLowIntensity.csv",
+	}
+	jobs = append(jobs, newJob)
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, newJob.Id))
 }
 
 func handleStop(w http.ResponseWriter, r *http.Request) {
-	if sem.TryAcquire(1) {
-		sem.Release(1)
+	killChan <- struct{}{}
+	select {
+	case err := <-killSuccess:
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			io.WriteString(w, "Error occured while stopping current job!")
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, "Job successfully stopped!")
+	case <-time.After(10 * time.Second):
+		<-killChan
 		w.WriteHeader(http.StatusConflict)
 		io.WriteString(w, "There is currently no job running!")
 		return
 	}
-	killChan <- struct{}{}
-	err := <-killSuccess
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, "Error occured while stopping current job!")
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "Job successfully stopped!")
 }
 
 func runJob(jobToStart job) error {
-	defer sem.Release(1)
-	execDir := shared.GetExecDir()
-	currentTime := time.Now().Format("01-02-2006_03:04")
-	f, err := os.Create(fmt.Sprintf("%s/results%s.csv", execDir, currentTime))
+	f, err := os.Create(fmt.Sprintf("%s/results%s.csv", shared.GetExecDir(), time.Now().Format("01-02-2006_03:04")))
 	if err != nil {
 		logger.WithField("func", "startLoadDriver").Error("Could not create result file!")
 		return err
@@ -130,20 +131,18 @@ func runJob(jobToStart job) error {
 	go func() {
 		done <- cmd.Run()
 	}()
-	for {
-		select {
-		case <-done:
+	select {
+	case <-done:
+		return nil
+	case <-killChan:
+		err := cmd.Process.Kill()
+		killSuccess <- err
+		if err == nil {
+			logger.Println("Job successfully stopped!")
 			return nil
-		case <-killChan:
-			err := cmd.Process.Kill()
-			killSuccess <- err
-			if err == nil {
-				logger.Println("Job successfully stopped!")
-				return nil
-			}
-			logger.WithError(err).Println("Error occured while killing process!")
-			return err
 		}
+		logger.WithError(err).Println("Error occured while killing process!")
+		return err
 	}
 }
 
@@ -153,8 +152,10 @@ func jobConsumer() {
 		err := runJob(nextJob)
 		if err != nil {
 			logger.WithField("func", "jobConsumer").Error("Job finished with errors")
+		} else {
+			logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Job with ID %s finished", nextJob.Id))
 		}
-		logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Job with ID %s finished", nextJob.Id))
+		jobs = jobs[1:]
 	}
 }
 

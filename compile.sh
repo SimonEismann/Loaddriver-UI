@@ -1,2 +1,2 @@
-docker build -t descartesresearch/web-load-driver ./load-director
-docker build -t descartesresearch/web-load-generator ./load-generator
+docker build -t simoneismann/loaddriver-master ./load-director
+docker build -t simoneismann/loaddriver-slave ./load-generator
