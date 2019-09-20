@@ -96,6 +96,7 @@ func handleJobPostDefault(w http.ResponseWriter, req *http.Request) {
 		IntensityFile: "warmedUpLowIntensity.csv",
 	}
 	jobs = append(jobs, newJob)
+	jobQueue <- newJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, newJob.Id))
 }
@@ -120,6 +121,16 @@ func handleStop(w http.ResponseWriter, r *http.Request) {
 }
 
 func runJob(jobToStart job) error {
+	for _, slave := range jobToStart.Slaves {
+		resp, err := http.Get(fmt.Sprintf("http://%s/start", slave))
+		if err != nil {
+
+		}
+		if resp.StatusCode != 200 {
+
+		}
+	}
+	time.Sleep(5000)
 	f, err := os.Create(fmt.Sprintf("%s/results%s.csv", shared.GetExecDir(), time.Now().Format("01-02-2006_03:04")))
 	if err != nil {
 		logger.WithField("func", "startLoadDriver").Error("Could not create result file!")

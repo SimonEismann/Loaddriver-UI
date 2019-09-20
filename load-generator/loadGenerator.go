@@ -51,6 +51,7 @@ func startLoadGenerator() {
 }
 
 func handleStart(w http.ResponseWriter, r *http.Request) {
+	logger.Info("Got start request")
 	if !sem.TryAcquire(1) {
 		w.WriteHeader(http.StatusConflict)
 		io.WriteString(w, "Load generator is already running!")
