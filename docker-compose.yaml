@@ -9,3 +9,8 @@ services:
     environment:
       REGISTRY_HOST: "master"
       REGISTRY_PORT: "80"
+
+networks:
+  default:
+    external:
+      name: load-driver-network

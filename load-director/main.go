@@ -93,7 +93,7 @@ func handleJobPostDefault(w http.ResponseWriter, req *http.Request) {
 		Id:            time.Now().Format("01-02-2006 03:04:05"),
 		Slaves:        allSlaves,
 		ScriptName:    "teastore_browse.lua",
-		IntensityFile: "warmedUpLowIntensity.csv",
+		IntensityFile: "defaultIntensity.csv",
 	}
 	jobs = append(jobs, newJob)
 	jobQueue <- newJob
@@ -120,30 +120,49 @@ func handleStop(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func runJob(jobToStart job) error {
-	for _, slave := range jobToStart.Slaves {
+func startSlaves(slaves []string) []string {
+	var successfulStarts []string
+	for _, slave := range slaves {
 		resp, err := http.Get(fmt.Sprintf("http://%s/start", slave))
-		if err != nil {
-
+		if err != nil || resp.StatusCode != http.StatusOK {
+			logger.WithField("func", "runJob").Warn(fmt.Sprintf("Slave registered under %s could not be started, ignoring for this job...", slave))
+			continue
 		}
-		if resp.StatusCode != 200 {
-
-		}
+		successfulStarts = append(successfulStarts, slave)
 	}
 	time.Sleep(5000)
+	return successfulStarts
+}
+
+func stopSlaves(slaves []string) {
+	for _, slave := range slaves {
+		resp, err := http.Get(fmt.Sprintf("http://%s/stop", slave))
+		if err != nil || resp.StatusCode != http.StatusOK {
+			logger.WithField("func", "runJob").Warn(fmt.Sprintf("Error occured while stopping slave registered under %s ...", slave))
+		}
+	}
+}
+
+func runJob(jobToStart job) error {
 	f, err := os.Create(fmt.Sprintf("%s/results%s.csv", shared.GetExecDir(), time.Now().Format("01-02-2006_03:04")))
 	if err != nil {
-		logger.WithField("func", "startLoadDriver").Error("Could not create result file!")
+		logger.WithField("func", "runJob").Error("Could not create result file!")
 		return err
 	}
 	defer f.Close()
-	cmd := generateCommand(jobToStart.Slaves, jobToStart.ScriptName, jobToStart.IntensityFile)
+	cmd := generateCommand(jobToStart)
+	successfulStarts := startSlaves(jobToStart.Slaves)
+	defer stopSlaves(successfulStarts)
 	done := make(chan error, 1)
 	go func() {
 		done <- cmd.Run()
 	}()
 	select {
-	case <-done:
+	case err = <-done:
+		if err != nil {
+			logger.WithField("func", "runJob").WithError(err).Error("Error occured during job run!")
+			return err
+		}
 		return nil
 	case <-killChan:
 		err := cmd.Process.Kill()
@@ -170,18 +189,21 @@ func jobConsumer() {
 	}
 }
 
-func generateCommand(slaves []string, scriptFile string, intensityFile string) *exec.Cmd {
+func generateCommand(forJob job) *exec.Cmd {
 	execDir := shared.GetExecDir()
 	commandArgs := []string{
 		"-jar", filepath.Join(execDir, "httploadgenerator.jar"),
 		"director",
-		"-a", fmt.Sprintf("%s/%s", execDir, intensityFile),
-		"-l", fmt.Sprintf("%s/%s", execDir, scriptFile)}
-	for _, slave := range slaves {
+		"-a", fmt.Sprintf("%s/%s", execDir, forJob.IntensityFile),
+		"-l", fmt.Sprintf("%s/%s", execDir, forJob.ScriptName)}
+	for _, slave := range forJob.Slaves {
 		commandArgs = append(commandArgs, fmt.Sprintf("-s %s", slave))
 	}
-	return exec.Command(
+	result := exec.Command(
 		"java",
 		commandArgs...,
 	)
+	result.Stdout = os.Stdout
+	result.Stderr = os.Stderr
+	return result
 }

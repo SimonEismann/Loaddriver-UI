@@ -1,9 +1,9 @@
 package main
 
 import (
-	"io"
 	"load-generator/shared"
 	"net/http"
+	"os"
 	"os/exec"
 	"path/filepath"
 )
@@ -12,18 +12,19 @@ func handleStop(w http.ResponseWriter, r *http.Request) {
 	if sem.TryAcquire(1) {
 		sem.Release(1)
 		w.WriteHeader(http.StatusConflict)
-		io.WriteString(w, "Load Generator is currently not running!")
+		logger.WithField("func", "handleStop").Info("Load Generator is currently not running!")
 		return
 	}
 	stopChan <- struct{}{}
 	err := <-success
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, "Error occured while killing process!")
+		logger.WithField("func", "handleStop").Error("Error occured while killing process!")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "Load Generator successfully stopped!")
+	logger.WithField("func", "handleStop").Info("Load Generator successfully stopped!")
+
 }
 
 func startLoadGenerator() {
@@ -33,31 +34,28 @@ func startLoadGenerator() {
 		"java",
 		"-jar", filepath.Join(execDir, "httploadgenerator.jar"),
 		"loadgenerator")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	err := cmd.Start()
 	shared.Must(err)
-	for {
-		select {
-		case <-stopChan:
-			err := cmd.Process.Kill()
-			success <- err
-			if err == nil {
-				logger.Println("Load Generator successfully stopped!")
-				return
-			}
-			logger.WithError(err).Println("Error occured while killing process!")
-			return
-		}
+	<-stopChan
+	err = cmd.Process.Kill()
+	success <- err
+	if err == nil {
+		logger.WithField("func", "startLoadGenerator").Info("Load Generator successfully stopped!")
+		return
 	}
+	logger.WithError(err).Println("Error occured while killing process!")
+
 }
 
 func handleStart(w http.ResponseWriter, r *http.Request) {
-	logger.Info("Got start request")
 	if !sem.TryAcquire(1) {
 		w.WriteHeader(http.StatusConflict)
-		io.WriteString(w, "Load generator is already running!")
+		logger.WithField("func", "handleStart").Info("Load generator is already running!")
 		return
 	}
 	go startLoadGenerator()
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "Load generator started successfully!")
+	logger.WithField("func", "handleStart").Info("Load generator started successfully!")
 }
