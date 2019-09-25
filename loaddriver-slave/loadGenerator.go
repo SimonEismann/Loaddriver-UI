@@ -1,7 +1,7 @@
 package main
 
 import (
-	"load-generator/shared"
+	"loaddriver-slave/shared"
 	"net/http"
 	"os"
 	"os/exec"
@@ -24,7 +24,6 @@ func handleStop(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	logger.WithField("func", "handleStop").Info("Load Generator successfully stopped!")
-
 }
 
 func startLoadGenerator() {
@@ -41,12 +40,10 @@ func startLoadGenerator() {
 	<-stopChan
 	err = cmd.Process.Kill()
 	success <- err
-	if err == nil {
-		logger.WithField("func", "startLoadGenerator").Info("Load Generator successfully stopped!")
+	if err != nil {
+		logger.WithError(err).Println("Error occured while killing process!")
 		return
 	}
-	logger.WithError(err).Println("Error occured while killing process!")
-
 }
 
 func handleStart(w http.ResponseWriter, r *http.Request) {

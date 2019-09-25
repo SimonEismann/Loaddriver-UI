@@ -2,7 +2,7 @@ package registry
 
 import (
 	"encoding/json"
-	"load-director/logger"
+	"loaddriver-master/logger"
 	"net/http"
 	"strings"
 	"time"
