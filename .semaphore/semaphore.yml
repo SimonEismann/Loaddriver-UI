@@ -28,7 +28,7 @@ blocks:
           commands:
             - checkout
             - docker pull simoneismann/loaddriver-slave || true
-            - docker build --cache-from simoneismann/loaddriver-slave -t loaddriver-slave ./loaddriver-generator
+            - docker build --cache-from simoneismann/loaddriver-slave -t loaddriver-slave ./loaddriver-slave
             - docker tag loaddriver-slave simoneismann/loaddriver-slave
             - docker login -u="$username" -p="$password"
             - docker push simoneismann/loaddriver-slave
