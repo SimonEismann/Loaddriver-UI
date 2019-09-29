@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"loaddriver-master/api"
+	"loaddriver-master/consoleEcho"
+	log "loaddriver-master/logger"
 	"loaddriver-master/registry"
 	"loaddriver-master/shared"
 	"net/http"
@@ -15,23 +17,18 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 )
 
 const ()
 
 var (
+	consoleChan   = make(chan []byte, shared.MessageBufferSize)
 	killChan      = make(chan struct{}, 1)
 	killSuccess   = make(chan error, 1)
 	jobs          []job
 	jobQueue      = make(chan job)
 	slaveRegistry = registry.New()
-	logger        = &logrus.Logger{
-		Out:       os.Stderr,
-		Formatter: new(logrus.JSONFormatter),
-		Hooks:     make(logrus.LevelHooks),
-		Level:     logrus.DebugLevel,
-	}
+	logger        = log.NewLogger()
 )
 
 type job struct {
@@ -42,18 +39,20 @@ type job struct {
 }
 
 func main() {
-	log := logger.WithField("func", "main")
+	hub := consoleEcho.NewHub(logger, consoleChan)
+	go hub.Run()
 	r := mux.NewRouter()
 	r.HandleFunc("", api.PrintDescription)
 	r.HandleFunc("/", api.PrintDescription)
 	r.HandleFunc("/jobs/current", handleStop).Methods(http.MethodDelete)
+	r.Handle("/jobs/current/output", hub)
 	r.HandleFunc("/jobs/default", handleJobPostDefault).Methods(http.MethodPost)
 	r.HandleFunc("/jobs", handleJobPost).Methods(http.MethodPost)
 	r.HandleFunc("/jobs", handleJobsGet).Methods(http.MethodGet)
-	go slaveRegistry.StartCleanUpRoutine()
 	go jobConsumer()
 	r.Handle("/registry", slaveRegistry)
-	log.Info("Started server")
+	go slaveRegistry.StartCleanUpRoutine()
+	logger.WithField("func", "main").Info("Started server")
 	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{"Authorization", "X-Requested-With", "Content-Type"}),
 		handlers.AllowedMethods([]string{http.MethodPost, http.MethodDelete, http.MethodGet, http.MethodPut, http.MethodOptions}),
@@ -90,7 +89,7 @@ func handleJobPostDefault(w http.ResponseWriter, req *http.Request) {
 		allSlaves = append(allSlaves, string(slave.Location))
 	}
 	newJob := job{
-		Id:            time.Now().Format("01-02-2006 03:04:05"),
+		Id:            time.Now().Format("01-02-2006_03:04:05"),
 		Slaves:        allSlaves,
 		ScriptName:    "teastore_browse.lua",
 		IntensityFile: "defaultIntensity.csv",
@@ -203,7 +202,8 @@ func generateCommand(forJob job) *exec.Cmd {
 		"java",
 		commandArgs...,
 	)
-	result.Stdout = os.Stdout
-	result.Stderr = os.Stderr
+	channelWriter := consoleEcho.NewChannelWriter(consoleChan)
+	result.Stdout = io.MultiWriter(os.Stdout, channelWriter)
+	result.Stderr = io.MultiWriter(os.Stderr, channelWriter)
 	return result
 }

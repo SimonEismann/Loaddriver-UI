@@ -1,8 +1,16 @@
 package shared
 
 import (
+	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/gorilla/websocket"
+)
+
+const (
+	MessageBufferSize = 2048
+	ReadBufferSize    = 256
 )
 
 // HomeDir is used to get the platform specific HOME directory
@@ -38,4 +46,10 @@ func MinInIntSlice(ints []int) int {
 		}
 	}
 	return min
+}
+
+func NewUpgrader() *websocket.Upgrader {
+	result := &websocket.Upgrader{ReadBufferSize: ReadBufferSize, WriteBufferSize: MessageBufferSize}
+	result.CheckOrigin = func(r *http.Request) bool { return true }
+	return result
 }
