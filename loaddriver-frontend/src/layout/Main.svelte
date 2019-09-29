@@ -1,16 +1,17 @@
 <script>
   import ConsoleReader from "../components/ConsoleReader.svelte";
   import CustomButton from "../components/CustomButton.svelte";
+  import { API_ROOT } from "../env.js";
 
   const startDefaultJob = async () => {
-    await fetch("http://localhost/jobs/default", {
+    await fetch(`${API_ROOT}/jobs/default`, {
       method: "POST",
       mode: "cors"
     });
   };
 
   const stopCurrentJob = async () => {
-    await fetch("http://localhost/jobs/current", {
+    await fetch(`${API_ROOT}/jobs/current`, {
       method: "DELETE",
       mode: "cors"
     });
@@ -32,7 +33,7 @@
   }
 
   .console {
-    height: 80%;
+    height: 500px;
     width: 100%;
   }
 </style>

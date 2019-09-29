@@ -11,6 +11,7 @@
     margin-left: auto;
     margin-right: auto;
     border-radius: 4px;
+    cursor: pointer;
   }
 
   #menu-hack {

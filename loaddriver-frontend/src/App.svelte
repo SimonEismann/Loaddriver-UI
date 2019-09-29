@@ -6,6 +6,7 @@
 
 <style>
   .main-container {
+    overflow: hidden;
     height: 100vh;
     width: 100vw;
     display: grid;
