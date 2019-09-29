@@ -35,7 +35,7 @@
 
 <div class="main-container">
   <div id="header">
-    <Header />
+    <Header on:click={() => console.log('Clicked')} />
   </div>
   <div id="main_content">
     <Main />
