@@ -1,2 +1,2 @@
-docker build -t simoneismann/loaddriver-master ./load-director
-docker build -t simoneismann/loaddriver-slave ./load-generator
+docker build -t simoneismann/loaddriver-master ./loaddriver-master
+docker build -t simoneismann/loaddriver-slave ./loaddriver-slave

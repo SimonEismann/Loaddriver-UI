@@ -13,4 +13,4 @@ RUN ["go", "build", "."]
 
 EXPOSE 80
 
-ENTRYPOINT ["./load-director"]
+ENTRYPOINT ["./loaddriver-master"]

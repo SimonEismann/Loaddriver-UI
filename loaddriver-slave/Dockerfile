@@ -17,5 +17,5 @@ EXPOSE 80
 ENV REGISTRY_HOST="localhost"
 ENV REGISTRY_PORT="80"
 
-ENTRYPOINT ["./load-generator"]
+ENTRYPOINT ["./loaddriver-slave"]
 
