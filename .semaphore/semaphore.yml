@@ -15,8 +15,7 @@ blocks:
           commands:
             - checkout
             - docker pull simoneismann/loaddriver-master || true
-            - docker build --cache-from simoneismann/loaddriver-master -t loaddriver-master ./loaddriver-master
-            - docker tag loaddriver-master simoneismann/loaddriver-master
+            - docker build --cache-from simoneismann/loaddriver-master -t simoneismann/loaddriver-master ./loaddriver-master
             - docker login -u="$username" -p="$password"
             - docker push simoneismann/loaddriver-master
   - name: "Build & push slave"
@@ -28,8 +27,7 @@ blocks:
           commands:
             - checkout
             - docker pull simoneismann/loaddriver-slave || true
-            - docker build --cache-from simoneismann/loaddriver-slave -t loaddriver-slave ./loaddriver-slave
-            - docker tag loaddriver-slave simoneismann/loaddriver-slave
+            - docker build --cache-from simoneismann/loaddriver-slave -t simoneismann/loaddriver-slave ./loaddriver-slave
             - docker login -u="$username" -p="$password"
             - docker push simoneismann/loaddriver-slave
   - name: "Build & push frontend"
@@ -41,7 +39,6 @@ blocks:
           commands:
             - checkout
             - docker pull simoneismann/loaddriver-frontend || true
-            - docker build --cache-from simoneismann/loaddriver-frontend -t loaddriver-frontend ./loaddriver-frontend
-            - docker tag loaddriver-frontend simoneismann/loaddriver-frontend
+            - docker build --cache-from simoneismann/loaddriver-frontend -t simoneismann/loaddriver-frontend ./loaddriver-frontend
             - docker login -u="$username" -p="$password"
             - docker push simoneismann/loaddriver-frontend
