@@ -1,9 +1,16 @@
 version: "3"
 services:
+  frontend:
+    image: simoneismann/loaddriver-frontend
+    environment:
+      API_ROOT: "http://localhost:81"
+      CONSOLE_URI: "ws://localhost:81/jobs/current/output"
+    ports:
+      - "80:80"
   master:
     image: simoneismann/loaddriver-master
     ports:
-      - "80:80"
+      - "81:80"
   slave:
     image: simoneismann/loaddriver-slave
     environment:

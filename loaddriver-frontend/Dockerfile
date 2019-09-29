@@ -10,7 +10,7 @@ RUN ["npm", "run", "build"]
 
 ENV PORT 80
 ENV API_ROOT "http://localhost"
-ENV CONSOLE_URI "http://localhost/jobs/current/output"
+ENV CONSOLE_URI "ws://localhost/jobs/current/output"
 EXPOSE ${PORT}
 
 CMD ["npm", "run", "serve"]

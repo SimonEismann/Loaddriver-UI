@@ -1,5 +1,0 @@
-POST http://localhost/jobs/default
-
-DELETE http://localhost/jobs/current
-
-GET http://localhost/jobs
