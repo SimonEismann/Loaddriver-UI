@@ -1,5 +1,5 @@
 version: v1.0
-name: Build loaddriver UI 
+name: Build loaddriver UI
 agent:
   machine:
     type: e1-standard-2
@@ -11,24 +11,37 @@ blocks:
       secrets:
         - name: Dockerhub
       jobs:
-      - name: Build master
-        commands:
-          - checkout
-          - docker pull simoneismann/loaddriver-master || true
-          - docker build --cache-from simoneismann/loaddriver-master -t loaddriver-master ./load-director
-          - docker tag loaddriver-master simoneismann/loaddriver-master
-          - docker login -u="$username" -p="$password"
-          - docker push simoneismann/loaddriver-master
+        - name: Build master
+          commands:
+            - checkout
+            - docker pull simoneismann/loaddriver-master || true
+            - docker build --cache-from simoneismann/loaddriver-master -t loaddriver-master ./loaddriver-master
+            - docker tag loaddriver-master simoneismann/loaddriver-master
+            - docker login -u="$username" -p="$password"
+            - docker push simoneismann/loaddriver-master
   - name: "Build & push slave"
     task:
       secrets:
         - name: Dockerhub
       jobs:
-      - name: Build slave
-        commands:
-          - checkout
-          - docker pull simoneismann/loaddriver-slave || true
-          - docker build --cache-from simoneismann/loaddriver-slave -t loaddriver-slave ./load-generator
-          - docker tag loaddriver-slave simoneismann/loaddriver-slave
-          - docker login -u="$username" -p="$password"
-          - docker push simoneismann/loaddriver-slave
+        - name: Build slave
+          commands:
+            - checkout
+            - docker pull simoneismann/loaddriver-slave || true
+            - docker build --cache-from simoneismann/loaddriver-slave -t loaddriver-slave ./loaddriver-generator
+            - docker tag loaddriver-slave simoneismann/loaddriver-slave
+            - docker login -u="$username" -p="$password"
+            - docker push simoneismann/loaddriver-slave
+  - name: "Build & push frontend"
+    task:
+      secrets:
+        - name: Dockerhub
+      jobs:
+        - name: Build frontend
+          commands:
+            - checkout
+            - docker pull simoneismann/loaddriver-frontend || true
+            - docker build --cache-from simoneismann/loaddriver-frontend -t loaddriver-frontend ./loaddriver-frontend
+            - docker tag loaddriver-frontend simoneismann/loaddriver-frontend
+            - docker login -u="$username" -p="$password"
+            - docker push simoneismann/loaddriver-frontend
