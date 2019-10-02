@@ -41,8 +41,7 @@
     color: white;
     width: 100%;
     height: 100%;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding: 1em;
     font-size: 1.2em;
     overflow: auto;
   }

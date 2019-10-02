@@ -1,5 +1,11 @@
 <script>
+  import { sidebarState } from "../stores.js";
+
   export let color;
+
+  const toggleSidebar = () => {
+    sidebarState.toggle();
+  };
 </script>
 
 <style>
@@ -7,7 +13,7 @@
     position: relative;
     display: block;
     width: 60px;
-    height: 40px;
+    height: 45px;
     margin-left: auto;
     margin-right: auto;
     border-radius: 4px;
@@ -57,7 +63,11 @@
 
 <div>
   <input type="checkbox" id="menu-hack" />
-  <label for="menu-hack" class="hamburger" style="background: {color}" on:click>
+  <label
+    for="menu-hack"
+    class="hamburger"
+    style="background: {color}"
+    on:click={toggleSidebar}>
     <span class="line" />
     <span class="line" />
     <span class="line" />

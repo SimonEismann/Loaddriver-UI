@@ -2,6 +2,8 @@
   import Header from "./layout/Header.svelte";
   import Main from "./layout/Main.svelte";
   import Footer from "./layout/Footer.svelte";
+  import Sidebar from "./layout/Sidebar.svelte";
+  import { sidebarState } from "./stores.js";
 </script>
 
 <style>
@@ -10,19 +12,24 @@
     height: 100vh;
     width: 100vw;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-template-rows: 5% 1fr 5%;
     grid-template-areas:
-      "header header header header header"
-      "content content content content content"
-      "footer footer footer footer footer";
+      "header"
+      "content"
+      "footer";
+  }
+
+  .sidebar-open {
+    grid-template-columns: 1fr 4fr;
+    grid-template-areas:
+      "header header "
+      "sidebar content "
+      "footer footer";
   }
 
   #header {
     grid-area: header;
-    position: sticky;
-    top: 0;
-    left: 0;
   }
 
   #main_content {
@@ -32,16 +39,23 @@
   #footer {
     grid-area: footer;
   }
+
+  #sidebar {
+    grid-area: sidebar;
+  }
 </style>
 
-<div class="main-container">
+<div class="main-container" class:sidebar-open={$sidebarState}>
   <div id="header">
-    <Header on:click={() => console.log('Clicked')} />
+    <Header />
   </div>
   <div id="main_content">
     <Main />
   </div>
   <div id="footer">
     <Footer />
+  </div>
+  <div id="sidebar">
+    <Sidebar />
   </div>
 </div>

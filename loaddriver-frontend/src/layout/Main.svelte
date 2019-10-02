@@ -33,8 +33,8 @@
   }
 
   .console {
-    height: 500px;
-    width: 100%;
+    height: 720px;
+    width: 1280px;
   }
 </style>
 

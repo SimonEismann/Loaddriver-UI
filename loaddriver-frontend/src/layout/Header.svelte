@@ -24,7 +24,7 @@
 </style>
 
 <div class="container">
-  <HamburgerIcon color="gray" on:click/>
+  <HamburgerIcon color="gray" />
   <div class="logo">
     <h1>
       <a href="/">LoadDriver-UI</a>
