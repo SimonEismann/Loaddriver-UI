@@ -28,7 +28,7 @@ type Registry struct {
 
 func New() *Registry {
 	return &Registry{
-		log:    logger.NewLogger().WithField("component", "registry"),
+		log:    logger.NewLogger().WithField("comp", "registry"),
 		Slaves: make(map[IP]RegistryEntry),
 	}
 }

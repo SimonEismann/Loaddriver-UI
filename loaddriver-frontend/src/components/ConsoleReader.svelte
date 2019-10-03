@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { API_ROOT, CONSOLE_URI } from "../env.js";
   let websocket;
   let log;
@@ -32,6 +32,12 @@
         appendLog(item);
       }
     };
+  });
+
+  onDestroy(() => {
+    if (websocket) {
+      websocket.close();
+    }
   });
 </script>
 

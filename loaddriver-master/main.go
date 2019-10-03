@@ -106,15 +106,15 @@ func handleStop(w http.ResponseWriter, r *http.Request) {
 	case err := <-killSuccess:
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			io.WriteString(w, "Error occured while stopping current job!")
+			io.WriteString(w, "Error occured while stopping current job")
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, "Job successfully stopped!")
+		io.WriteString(w, "Job successfully stopped")
 	case <-time.After(10 * time.Second):
 		<-killChan
 		w.WriteHeader(http.StatusConflict)
-		io.WriteString(w, "There is currently no job running!")
+		io.WriteString(w, "There is currently no job running")
 		return
 	}
 }
@@ -145,7 +145,7 @@ func stopSlaves(slaves []string) {
 func runJob(jobToStart job) error {
 	f, err := os.Create(fmt.Sprintf("%s/results%s.csv", shared.GetExecDir(), time.Now().Format("01-02-2006_03:04")))
 	if err != nil {
-		logger.WithField("func", "runJob").Error("Could not create result file!")
+		logger.WithField("func", "runJob").Error("Could not create result file")
 		return err
 	}
 	defer f.Close()
@@ -159,7 +159,7 @@ func runJob(jobToStart job) error {
 	select {
 	case err = <-done:
 		if err != nil {
-			logger.WithField("func", "runJob").WithError(err).Error("Error occured during job run!")
+			logger.WithField("func", "runJob").WithError(err).Error("Error occured during job run")
 			return err
 		}
 		return nil
@@ -167,10 +167,10 @@ func runJob(jobToStart job) error {
 		err := cmd.Process.Kill()
 		killSuccess <- err
 		if err == nil {
-			logger.Println("Job successfully stopped!")
+			logger.Println("Job successfully stopped")
 			return nil
 		}
-		logger.WithError(err).Println("Error occured while killing process!")
+		logger.WithError(err).Println("Error occured while killing process")
 		return err
 	}
 }

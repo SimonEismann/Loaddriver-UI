@@ -21,6 +21,7 @@ func (h *hub) Run() {
 		case sub := <-h.join:
 			h.subscribers[sub] = true
 		case sub := <-h.leave:
+			h.logger.WithField("comp", "hub").WithField("func", "write").Info("Client unsubscribed")
 			delete(h.subscribers, sub)
 			close(sub.send)
 		case msg := <-h.forward:
@@ -34,7 +35,7 @@ func (h *hub) Run() {
 func (h *hub) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := shared.NewUpgrader().Upgrade(w, req, nil)
 	if err != nil {
-		h.logger.WithField("func", "ServeHTTP").WithError(err).Error("Error during upgrade!")
+		h.logger.WithField("comp", "hub").WithField("func", "ServeHTTP").WithError(err).Error("Error during upgrade")
 		return
 	}
 	client := &consoleSubscriber{
@@ -45,8 +46,9 @@ func (h *hub) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	h.join <- client
 	defer func() { h.leave <- client }()
-	h.logger.WithField("func", "ServeHTTP").Info("New subscriber registered!")
-	client.write()
+	h.logger.WithField("comp", "hub").WithField("func", "ServeHTTP").Info("New subscriber registered")
+	go client.write()
+	client.read()
 }
 
 func NewHub(logger *logger.StandardLogger, forward chan []byte) *hub {

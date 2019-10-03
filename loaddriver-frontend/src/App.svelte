@@ -3,7 +3,9 @@
   import Main from "./layout/Main.svelte";
   import Footer from "./layout/Footer.svelte";
   import Sidebar from "./layout/Sidebar.svelte";
+  import { Router } from "svelte-routing";
   import { sidebarState } from "./stores.js";
+  export let url = "";
 </script>
 
 <style>
@@ -45,17 +47,21 @@
   }
 </style>
 
-<div class="main-container" class:sidebar-open={$sidebarState}>
-  <div id="header">
-    <Header />
+<Router {url}>
+  <div class="main-container" class:sidebar-open={$sidebarState}>
+    <div id="header">
+      <Header />
+    </div>
+    <div id="main_content">
+      <Main />
+    </div>
+    <div id="footer">
+      <Footer />
+    </div>
+    {#if $sidebarState}
+    <div id="sidebar">
+      <Sidebar />
+    </div>
+    {/if}
   </div>
-  <div id="main_content">
-    <Main />
-  </div>
-  <div id="footer">
-    <Footer />
-  </div>
-  <div id="sidebar">
-    <Sidebar />
-  </div>
-</div>
+</Router>
