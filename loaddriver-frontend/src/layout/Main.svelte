@@ -5,21 +5,32 @@
   import Dashboard from "../pages/Dashboard.svelte";
   import SlaveList from "../pages/SlaveList.svelte";
   import Home from "../pages/Home.svelte";
+  import Page from "../components/Page.svelte";
   import { Route } from "svelte-routing";
 </script>
 
 <Route path="dashboard">
-  <Dashboard />
+  <Page>
+    <Dashboard />
+  </Page>
 </Route>
 <Route path="jobs">
-  <Jobs />
+  <Page>
+    <Jobs />
+  </Page>
 </Route>
 <Route path="history">
-  <History />
+  <Page>
+    <History />
+  </Page>
 </Route>
 <Route path="slaves">
-  <SlaveList />
+  <Page>
+    <SlaveList />
+  </Page>
 </Route>
 <Route path="">
-  <Home />
+  <Page>
+    <Home />
+  </Page>
 </Route>

@@ -1,4 +1,5 @@
 <script>
+  import { fade } from "svelte/transition";
   import CustomButton from "../components/CustomButton.svelte";
   import ConsoleReader from "../components/ConsoleReader.svelte";
   import FloatingActionButton from "../components/FloatingActionButton.svelte";
@@ -57,7 +58,9 @@
   <div class="console">
     <ConsoleReader />
   </div>
-  <FloatingActionButton tooltip="Queue a new job" on:click={console.log('Test')}>
+  <FloatingActionButton
+    tooltip="Queue a new job"
+    on:click={console.log('Test')}>
     <i class="material-icons" style="font-size: 5em">add</i>
   </FloatingActionButton>
 </div>
