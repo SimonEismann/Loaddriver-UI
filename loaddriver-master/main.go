@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"loaddriver-master/api"
 	"loaddriver-master/consoleEcho"
 	log "loaddriver-master/logger"
@@ -25,8 +27,9 @@ var (
 	consoleChan   = make(chan []byte, shared.MessageBufferSize)
 	killChan      = make(chan struct{}, 1)
 	killSuccess   = make(chan error, 1)
-	jobs          []job
+	jobsMap       = make(map[string]job)
 	jobQueue      = make(chan job)
+	jobsDone      []job
 	slaveRegistry = registry.New()
 	logger        = log.NewLogger()
 )
@@ -40,26 +43,37 @@ type job struct {
 
 func main() {
 	hub := consoleEcho.NewHub(logger, consoleChan)
-	go hub.Run()
 	r := mux.NewRouter()
 	r.HandleFunc("", api.PrintDescription)
 	r.HandleFunc("/", api.PrintDescription)
-	r.HandleFunc("/jobs/current", handleStop).Methods(http.MethodDelete)
+	r.HandleFunc("/jobs", handlePostJob).Methods(http.MethodPost)
+	r.HandleFunc("/jobs", handleGetJobs).Methods(http.MethodGet)
+	r.HandleFunc("/jobs/done", handleGetJobsDone).Methods(http.MethodGet)
+	r.HandleFunc("/jobs/default", handlePostJobDefault).Methods(http.MethodPost)
+	r.HandleFunc("/jobs/current", handleDeleteJobCurrent).Methods(http.MethodDelete)
+	r.HandleFunc("/jobs/{jobId}", handleGetJobByID).Methods(http.MethodGet)
+	r.HandleFunc("/jobs/{jobId}/log", handleGetJobLog).Methods(http.MethodGet)
+	r.HandleFunc("/jobs/{jobId}/result", handleGetJobResults).Methods(http.MethodGet)
 	r.Handle("/jobs/current/output", hub)
-	r.HandleFunc("/jobs/default", handleJobPostDefault).Methods(http.MethodPost)
-	r.HandleFunc("/jobs", handleJobPost).Methods(http.MethodPost)
-	r.HandleFunc("/jobs", handleJobsGet).Methods(http.MethodGet)
-	go jobConsumer()
 	r.Handle("/registry", slaveRegistry)
+	go hub.Run()
+	go jobConsumer()
 	go slaveRegistry.StartCleanUpRoutine()
 	logger.WithField("func", "main").Info("Started server")
-	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+	err := http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{"Authorization", "X-Requested-With", "Content-Type"}),
 		handlers.AllowedMethods([]string{http.MethodPost, http.MethodDelete, http.MethodGet, http.MethodPut, http.MethodOptions}),
 		handlers.AllowCredentials())(r))
+	if err != nil {
+		logger.WithField("func", "main").WithError(err).Error("Error starting server")
+	}
 }
 
-func handleJobsGet(w http.ResponseWriter, req *http.Request) {
+func handleGetJobs(w http.ResponseWriter, req *http.Request) {
+	var jobs []job
+	for _, v := range jobsMap {
+		jobs = append(jobs, v)
+	}
 	resp, err := json.MarshalIndent(jobs, "", "\t")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -69,7 +83,75 @@ func handleJobsGet(w http.ResponseWriter, req *http.Request) {
 	w.Write(resp)
 }
 
-func handleJobPost(w http.ResponseWriter, req *http.Request) {
+func handleGetJobByID(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	jobId := vars["jobId"]
+	if _, ok := jobsMap[jobId]; !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	resp, err := json.MarshalIndent(jobsMap[jobId], "", "\t")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func handleGetJobLog(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	jobId := vars["jobId"]
+	if _, ok := jobsMap[jobId]; !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	logFile, err := ioutil.ReadFile(filepath.Join(shared.GetExecDir(), "logs", jobId))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	buffer := bytes.NewBuffer(logFile)
+	w.Header().Set("Content-type", "text/plain")
+	if _, err := buffer.WriteTo(w); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func handleGetJobResults(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	jobId := vars["jobId"]
+	if _, ok := jobsMap[jobId]; !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	resultsFile, err := ioutil.ReadFile(filepath.Join(shared.GetExecDir(), "results", fmt.Sprintf("%s.csv", jobId)))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	buffer := bytes.NewBuffer(resultsFile)
+	w.Header().Set("Content-type", "text/csv")
+	if _, err := buffer.WriteTo(w); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func handleGetJobsDone(w http.ResponseWriter, req *http.Request) {
+	resp, err := json.MarshalIndent(jobsDone, "", "\t")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func handlePostJob(w http.ResponseWriter, req *http.Request) {
 	var postedJob job
 	err := json.NewDecoder(req.Body).Decode(&postedJob)
 	defer req.Body.Close()
@@ -78,12 +160,12 @@ func handleJobPost(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	postedJob.Id = time.Now().Format("01-02-2006_03:04:05")
-	jobs = append(jobs, postedJob)
+	jobsMap[postedJob.Id] = postedJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
 }
 
-func handleJobPostDefault(w http.ResponseWriter, req *http.Request) {
+func handlePostJobDefault(w http.ResponseWriter, req *http.Request) {
 	var allSlaves []string
 	for _, slave := range slaveRegistry.Slaves {
 		allSlaves = append(allSlaves, string(slave.Location))
@@ -94,13 +176,13 @@ func handleJobPostDefault(w http.ResponseWriter, req *http.Request) {
 		ScriptName:    "teastore_browse.lua",
 		IntensityFile: "defaultIntensity.csv",
 	}
-	jobs = append(jobs, newJob)
+	jobsMap[newJob.Id] = newJob
 	jobQueue <- newJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, newJob.Id))
 }
 
-func handleStop(w http.ResponseWriter, r *http.Request) {
+func handleDeleteJobCurrent(w http.ResponseWriter, r *http.Request) {
 	killChan <- struct{}{}
 	select {
 	case err := <-killSuccess:
@@ -143,13 +225,20 @@ func stopSlaves(slaves []string) {
 }
 
 func runJob(jobToStart job) error {
-	f, err := os.Create(fmt.Sprintf("%s/results%s.csv", shared.GetExecDir(), time.Now().Format("01-02-2006_03:04")))
+	resultsFileName := fmt.Sprintf("%s.csv", jobToStart.Id)
+	f, err := shared.CreateFile(filepath.Join(shared.GetExecDir(), "results"), resultsFileName)
 	if err != nil {
-		logger.WithField("func", "runJob").Error("Could not create result file")
+		logger.WithField("func", "runJob").WithError(err).Error("Could not create result file")
+		return err
+	}
+	f.Close()
+	f, err = shared.CreateFile(filepath.Join(shared.GetExecDir(), "logs"), jobToStart.Id)
+	if err != nil {
+		logger.WithField("func", "runJob").WithError(err).Error("Could not create log file")
 		return err
 	}
 	defer f.Close()
-	cmd := generateCommand(jobToStart)
+	cmd := generateCommand(jobToStart, filepath.Join("results", resultsFileName), f)
 	successfulStarts := startSlaves(jobToStart.Slaves)
 	defer stopSlaves(successfulStarts)
 	done := make(chan error, 1)
@@ -184,17 +273,19 @@ func jobConsumer() {
 		} else {
 			logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Job with ID %s finished", nextJob.Id))
 		}
-		jobs = jobs[1:]
+		jobsDone = append(jobsDone, nextJob)
 	}
 }
 
-func generateCommand(forJob job) *exec.Cmd {
+func generateCommand(forJob job, resultsFile string, logFile *os.File) *exec.Cmd {
 	execDir := shared.GetExecDir()
 	commandArgs := []string{
 		"-jar", filepath.Join(execDir, "httploadgenerator.jar"),
 		"director",
 		"-a", fmt.Sprintf("%s/%s", execDir, forJob.IntensityFile),
-		"-l", fmt.Sprintf("%s/%s", execDir, forJob.ScriptName)}
+		"-l", fmt.Sprintf("%s/%s", execDir, forJob.ScriptName),
+		"-o", resultsFile,
+	}
 	for _, slave := range forJob.Slaves {
 		commandArgs = append(commandArgs, fmt.Sprintf("-s %s", slave))
 	}
@@ -203,7 +294,7 @@ func generateCommand(forJob job) *exec.Cmd {
 		commandArgs...,
 	)
 	channelWriter := consoleEcho.NewChannelWriter(consoleChan)
-	result.Stdout = io.MultiWriter(os.Stdout, channelWriter)
-	result.Stderr = io.MultiWriter(os.Stderr, channelWriter)
+	result.Stdout = io.MultiWriter(os.Stdout, channelWriter, logFile)
+	result.Stderr = io.MultiWriter(os.Stderr, channelWriter, logFile)
 	return result
 }

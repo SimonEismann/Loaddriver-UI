@@ -53,3 +53,10 @@ func NewUpgrader() *websocket.Upgrader {
 	result.CheckOrigin = func(r *http.Request) bool { return true }
 	return result
 }
+
+func CreateFile(path string, fileName string) (*os.File, error) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, os.ModeDir)
+	}
+	return os.Create(filepath.Join(path, fileName))
+}

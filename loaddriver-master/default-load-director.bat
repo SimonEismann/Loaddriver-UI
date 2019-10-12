@@ -1,1 +1,0 @@
-java -jar httploadgenerator.jar director -s localhost -a ./warmedUpLowIntensity.csv -l ./teastore_browse.lua
