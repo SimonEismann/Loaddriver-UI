@@ -159,7 +159,7 @@ func handlePostJob(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	postedJob.Id = time.Now().Format("01-02-2006_03:04:05")
+	postedJob.Id = time.Now().Format("02-01-2006_15:04:05")
 	jobsMap[postedJob.Id] = postedJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
@@ -171,7 +171,7 @@ func handlePostJobDefault(w http.ResponseWriter, req *http.Request) {
 		allSlaves = append(allSlaves, string(slave.Location))
 	}
 	newJob := job{
-		Id:            time.Now().Format("01-02-2006_03:04:05"),
+		Id:            time.Now().Format("02-01-2006_15:04:05"),
 		Slaves:        allSlaves,
 		ScriptName:    "teastore_browse.lua",
 		IntensityFile: "defaultIntensity.csv",

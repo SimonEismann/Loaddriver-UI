@@ -14,6 +14,7 @@
     height: 100vh;
     width: 100vw;
     display: grid;
+    background-color: rgb(248, 249, 250);
     grid-template-columns: 1fr;
     grid-template-rows: 3em 1fr 3em;
     grid-template-areas:

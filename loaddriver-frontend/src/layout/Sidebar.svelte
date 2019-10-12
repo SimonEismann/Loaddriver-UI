@@ -25,7 +25,8 @@
 
 <div class="container">
   <nav class="navbar">
-    <Link to="/" getProps={getLinkProps}>Dashboard</Link>
+    <Link to="/" getProps={getLinkProps}>Home</Link>
+    <Link to="dashboard" getProps={getLinkProps}>Dashboard</Link>
     <Link to="jobs" getProps={getLinkProps}>Jobs</Link>
     <Link to="history" getProps={getLinkProps}>History</Link>
     <Link to="slaves" getProps={getLinkProps}>Slaves</Link>

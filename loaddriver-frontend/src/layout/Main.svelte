@@ -4,10 +4,11 @@
   import Jobs from "../pages/Jobs.svelte";
   import Dashboard from "../pages/Dashboard.svelte";
   import SlaveList from "../pages/SlaveList.svelte";
+  import Home from "../pages/Home.svelte";
   import { Route } from "svelte-routing";
 </script>
 
-<Route>
+<Route path="dashboard">
   <Dashboard />
 </Route>
 <Route path="jobs">
@@ -18,4 +19,7 @@
 </Route>
 <Route path="slaves">
   <SlaveList />
+</Route>
+<Route path="">
+  <Home />
 </Route>

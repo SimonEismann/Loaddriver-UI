@@ -7,17 +7,17 @@
 
 <style>
   .container {
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     width: 100%;
     height: 100%;
-    border: 1px solid black;
     display: grid;
+    background-color: white;
     grid-template-areas:
       "details details"
       "log results";
     grid-template-columns: 1fr 1fr;
     border-radius: 5px;
-    box-shadow: 0.1em 0.1em 0.1em 0.1em rgba(0, 0, 0, 0.3);
+    box-shadow: var(--card__box_shadow);
   }
 
   .details {
