@@ -1,5 +1,6 @@
 <script>
   import CustomButton from "../components/CustomButton.svelte";
+  import ConsoleReader from "../components/ConsoleReader.svelte";
   import { API_ROOT } from "../env.js";
 
   const startDefaultJob = async () => {
@@ -30,6 +31,12 @@
   .button-group {
     height: 15%;
   }
+
+  .console {
+    height: 720px;
+    width: 1280px;
+    margin: auto;
+  }
 </style>
 
 <div class="container">
@@ -45,5 +52,8 @@
       backgroundColor="red"
       size="1.2em"
       value="Stop" />
+  </div>
+  <div class="console">
+    <ConsoleReader />
   </div>
 </div>

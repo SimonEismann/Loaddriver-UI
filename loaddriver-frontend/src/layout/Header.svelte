@@ -11,6 +11,11 @@
     margin-left: 1em;
   }
 
+  .hamburger {
+    height: 2em;
+    width: 2.5em;
+  }
+
   .container {
     width: 100%;
     height: 100%;
@@ -24,7 +29,9 @@
 </style>
 
 <div class="container">
-  <HamburgerIcon color="gray" />
+  <div class="hamburger">
+    <HamburgerIcon />
+  </div>
   <div class="logo">
     <h1>
       <a href="/">LoadDriver-UI</a>

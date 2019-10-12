@@ -1,5 +1,13 @@
 <script>
-  import { Link } from "svelte-routing";
+  import { Link, link } from "svelte-routing";
+
+  const getLinkProps = ({ location, href, isPartiallyCurrent, isCurrent }) => {
+    const isActive = href === "/" ? isCurrent : isPartiallyCurrent || isCurrent;
+    if (isActive) {
+      return { class: "active nav-link" };
+    }
+    return { class: "nav-link" };
+  };
 </script>
 
 <style>
@@ -7,8 +15,6 @@
     border-right: 1px solid black;
     width: 100%;
     height: 100%;
-    padding-left: 2em;
-    padding-top: 1em;
   }
 
   .navbar {
@@ -19,8 +25,9 @@
 
 <div class="container">
   <nav class="navbar">
-    <Link to="/">Dashboard</Link>
-    <Link to="jobs">Jobs</Link>
-    <Link to="log">Log</Link>
+    <Link to="/" getProps={getLinkProps}>Dashboard</Link>
+    <Link to="jobs" getProps={getLinkProps}>Jobs</Link>
+    <Link to="history" getProps={getLinkProps}>History</Link>
+    <Link to="slaves" getProps={getLinkProps}>Slaves</Link>
   </nav>
 </div>

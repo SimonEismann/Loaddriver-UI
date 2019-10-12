@@ -15,7 +15,7 @@
     width: 100vw;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 5% 1fr 5%;
+    grid-template-rows: 3em 1fr 3em;
     grid-template-areas:
       "header"
       "content"
@@ -25,8 +25,8 @@
   .sidebar-open {
     grid-template-columns: 1fr 4fr;
     grid-template-areas:
-      "header header "
-      "sidebar content "
+      "header header"
+      "sidebar content"
       "footer footer";
   }
 
@@ -36,6 +36,7 @@
 
   #main_content {
     grid-area: content;
+    overflow: hidden;
   }
 
   #footer {
@@ -59,9 +60,9 @@
       <Footer />
     </div>
     {#if $sidebarState}
-    <div id="sidebar">
-      <Sidebar />
-    </div>
+      <div id="sidebar">
+        <Sidebar />
+      </div>
     {/if}
   </div>
 </Router>

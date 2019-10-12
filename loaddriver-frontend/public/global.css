@@ -16,3 +16,25 @@ h2 {
 h3 {
   font-size: 1.2em;
 }
+
+.nav-link {
+  display: inline-block;
+  width: 100%;
+  border-bottom: 1px solid black;
+  padding-left: 2em;
+  font-size: 1.2em;
+  line-height: 2em;
+  vertical-align: middle;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-link:hover {
+  background: gray;
+  color: white;
+}
+
+.nav-link.active {
+  background: rgb(58, 58, 58);
+  color: white;
+}

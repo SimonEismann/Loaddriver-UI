@@ -1,17 +1,21 @@
 <script>
   import ConsoleReader from "../components/ConsoleReader.svelte";
-  import LiveWatch from "../pages/LiveWatch.svelte";
+  import History from "../pages/History.svelte";
   import Jobs from "../pages/Jobs.svelte";
   import Dashboard from "../pages/Dashboard.svelte";
+  import SlaveList from "../pages/SlaveList.svelte";
   import { Route } from "svelte-routing";
 </script>
 
 <Route>
   <Dashboard />
 </Route>
-<Route path="log">
-  <LiveWatch />
-</Route>
 <Route path="jobs">
   <Jobs />
+</Route>
+<Route path="history">
+  <History />
+</Route>
+<Route path="slaves">
+  <SlaveList />
 </Route>

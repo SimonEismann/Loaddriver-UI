@@ -1,75 +1,29 @@
 <script>
   import { sidebarState } from "../stores.js";
-
-  export let color;
-
-  const toggleSidebar = () => {
-    sidebarState.toggle();
-  };
 </script>
 
 <style>
   .hamburger {
-    position: relative;
-    display: block;
-    width: 60px;
-    height: 45px;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
     border-radius: 4px;
+    border: 1px solid rgb(199, 199, 199);
     cursor: pointer;
+    background: gray;
   }
 
-  #menu-hack {
-    display: none;
-  }
-
-  .line:nth-child(1) {
-    top: 10px;
-  }
-
-  .line:nth-child(2) {
-    top: 20px;
-  }
-
-  .line:nth-child(3) {
-    top: 30px;
-  }
-
-  .line {
-    position: absolute;
-    left: 10px;
-    height: 4px;
-    width: 40px;
-    background: #fff;
-    border-radius: 2px;
-    display: block;
-    transition: 0.5s;
-    transform-origin: center;
-  }
-
-  #menu-hack:checked + .hamburger .line:nth-child(1) {
-    transform: translateY(10px) rotate(-45deg);
-  }
-
-  #menu-hack:checked + .hamburger .line:nth-child(2) {
-    opacity: 0;
-  }
-
-  #menu-hack:checked + .hamburger .line:nth-child(3) {
-    transform: translateY(-10px) rotate(45deg);
+  .hamburger:hover {
+    background: rgb(71, 71, 71);
   }
 </style>
 
-<div>
-  <input type="checkbox" id="menu-hack" />
-  <label
-    for="menu-hack"
-    class="hamburger"
-    style="background: {color}"
-    on:click={toggleSidebar}>
-    <span class="line" />
-    <span class="line" />
-    <span class="line" />
-  </label>
+<div class="hamburger" on:click={sidebarState.toggle}>
+  {#if !$sidebarState}
+    <i class="material-icons" style="font-size: 2em">menu</i>
+  {:else}
+    <i class="material-icons" style="font-size: 2em">menu_open</i>
+  {/if}
 </div>
