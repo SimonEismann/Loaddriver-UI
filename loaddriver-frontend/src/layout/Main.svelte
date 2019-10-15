@@ -5,7 +5,9 @@
   import Dashboard from "../pages/Dashboard.svelte";
   import SlaveList from "../pages/SlaveList.svelte";
   import Home from "../pages/Home.svelte";
+  import Scripts from "../pages/Scripts.svelte";
   import Page from "../components/Page.svelte";
+  import Intensities from "../pages/Intensities.svelte";
   import { Route } from "svelte-routing";
 </script>
 
@@ -32,5 +34,15 @@
 <Route path="">
   <Page>
     <Home />
+  </Page>
+</Route>
+<Route path="">
+  <Page>
+    <Intensities />
+  </Page>
+</Route>
+<Route path="">
+  <Page>
+    <Scripts />
   </Page>
 </Route>

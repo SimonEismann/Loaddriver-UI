@@ -37,9 +37,15 @@
 
 <div class="container">
   <h1>Job history</h1>
-  {#each jobs as job}
+  {#if jobs.length === 0}
     <div class="job-card">
-      <JobCard {job} />
+      <h3 style="text-align: center;">No jobs have been run yet</h3>
     </div>
-  {/each}
+  {:else}
+    {#each jobs as job}
+      <div class="job-card">
+        <JobCard {job} />
+      </div>
+    {/each}
+  {/if}
 </div>

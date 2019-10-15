@@ -28,6 +28,8 @@
     <Link to="/" getProps={getLinkProps}>Home</Link>
     <Link to="dashboard" getProps={getLinkProps}>Dashboard</Link>
     <Link to="jobs" getProps={getLinkProps}>Jobs</Link>
+    <Link to="intensities" getProps={getLinkProps}>Intensities</Link>
+    <Link to="scripts" getProps={getLinkProps}>Scripts</Link>
     <Link to="history" getProps={getLinkProps}>History</Link>
     <Link to="slaves" getProps={getLinkProps}>Slaves</Link>
   </nav>
