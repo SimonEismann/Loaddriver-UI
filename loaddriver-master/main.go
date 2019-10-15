@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -35,10 +36,33 @@ var (
 )
 
 type job struct {
-	Id            string   `json:"id"`
-	Slaves        []string `json:"slaves"`
-	ScriptName    string   `json:"scriptName"`
-	IntensityFile string   `json:"intensityFile"`
+	Id             string   `json:"id"`
+	Slaves         []string `json:"slaves"`
+	ScriptName     string   `json:"scriptName"`
+	IntensityFile  string   `json:"intensityFile"`
+	WarmupDuration int      `json:"warmupDuration"`
+	WarmupPause    int      `json:"warmupPause"`
+	WarmupRate     float64  `json:"warmupRate"`
+	Threads        int      `json:"threads"`
+	Timeout        int      `json:"timeout"`
+}
+
+func NewDefaultJob() job {
+	var allSlaves []string
+	for _, slave := range slaveRegistry.Slaves {
+		allSlaves = append(allSlaves, string(slave.Location))
+	}
+	return job{
+		Id:             time.Now().Format("02-01-2006_15:04:05"),
+		Slaves:         allSlaves,
+		ScriptName:     "teastore_browse.lua",
+		IntensityFile:  "defaultIntensity.csv",
+		WarmupDuration: 30,
+		WarmupPause:    5,
+		WarmupRate:     0.0,
+		Threads:        128,
+		Timeout:        0,
+	}
 }
 
 func main() {
@@ -152,30 +176,20 @@ func handleGetJobsDone(w http.ResponseWriter, req *http.Request) {
 }
 
 func handlePostJob(w http.ResponseWriter, req *http.Request) {
-	var postedJob job
+	postedJob := NewDefaultJob()
 	err := json.NewDecoder(req.Body).Decode(&postedJob)
 	defer req.Body.Close()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	postedJob.Id = time.Now().Format("02-01-2006_15:04:05")
 	jobsMap[postedJob.Id] = postedJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
 }
 
 func handlePostJobDefault(w http.ResponseWriter, req *http.Request) {
-	var allSlaves []string
-	for _, slave := range slaveRegistry.Slaves {
-		allSlaves = append(allSlaves, string(slave.Location))
-	}
-	newJob := job{
-		Id:            time.Now().Format("02-01-2006_15:04:05"),
-		Slaves:        allSlaves,
-		ScriptName:    "teastore_browse.lua",
-		IntensityFile: "defaultIntensity.csv",
-	}
+	newJob := NewDefaultJob()
 	jobsMap[newJob.Id] = newJob
 	jobQueue <- newJob
 	w.WriteHeader(http.StatusCreated)
@@ -282,8 +296,13 @@ func generateCommand(forJob job, resultsFile string, logFile *os.File) *exec.Cmd
 	commandArgs := []string{
 		"-jar", filepath.Join(execDir, "httploadgenerator.jar"),
 		"director",
-		"-a", fmt.Sprintf("%s/%s", execDir, forJob.IntensityFile),
-		"-l", fmt.Sprintf("%s/%s", execDir, forJob.ScriptName),
+		"-a", filepath.Join(execDir, "intensities", forJob.IntensityFile),
+		"-l", filepath.Join(execDir, "scripts", forJob.ScriptName),
+		"--wd", strconv.Itoa(forJob.WarmupDuration),
+		"--wp", strconv.Itoa(forJob.WarmupPause),
+		"--wr", fmt.Sprintf("%f", forJob.WarmupRate),
+		"-t", strconv.Itoa(forJob.Threads),
+		"-u", strconv.Itoa(forJob.Timeout),
 		"-o", resultsFile,
 	}
 	for _, slave := range forJob.Slaves {
