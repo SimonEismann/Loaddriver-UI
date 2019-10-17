@@ -31,18 +31,18 @@
     <SlaveList />
   </Page>
 </Route>
-<Route path="">
-  <Page>
-    <Home />
-  </Page>
-</Route>
-<Route path="">
+<Route path="intensities">
   <Page>
     <Intensities />
   </Page>
 </Route>
-<Route path="">
+<Route path="scripts">
   <Page>
     <Scripts />
+  </Page>
+</Route>
+<Route path="">
+  <Page>
+    <Home />
   </Page>
 </Route>

@@ -35,7 +35,7 @@
     cursor: pointer;
   }
 
-  .log:hover {
+.log:hover, .results:hover {
     background: gray;
     color: white;
   }
@@ -44,11 +44,6 @@
     grid-area: results;
     padding: 0.2em 1em 0.2em 1em;
     cursor: pointer;
-  }
-
-  .results:hover {
-    background: gray;
-    color: white;
   }
 
   li {
