@@ -14,12 +14,12 @@
   const updateChart = () => {
     if (chart) chart.destroy();
     chart = new Chart(ctx, {
-      type: "bar",
+      type: "line",
       data: {
         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
         datasets: [
           {
-            label: "# of Votes",
+            label: "Intensity curve",
             data: data,
             backgroundColor: [
               "rgba(255, 99, 132, 0.2)",
@@ -96,7 +96,14 @@
 
 <div class="container">
   <div class="details">
-    <canvas bind:this={ctx} width="16" height="9" />
+    <canvas
+      bind:this={ctx}
+      width="16"
+      height="9"
+      aria-label="Intensity file chart"
+      role="img">
+      <p>Your browser does not support the canvas element.</p>
+    </canvas>
   </div>
   <FileDownloader
     fileName={`${intensityFile.id}.csv`}
