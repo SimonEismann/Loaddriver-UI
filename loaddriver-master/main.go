@@ -292,10 +292,12 @@ func jobConsumer() {
 }
 
 func generateCommand(forJob job, resultsFile string, logFile *os.File) *exec.Cmd {
+	logger.Info(resultsFile)
 	execDir := shared.GetExecDir()
 	commandArgs := []string{
 		"-jar", filepath.Join(execDir, "httploadgenerator.jar"),
 		"director",
+		"-o", fmt.Sprintf("../%s", resultsFile),
 		"-a", filepath.Join(execDir, "intensities", forJob.IntensityFile),
 		"-l", filepath.Join(execDir, "scripts", forJob.ScriptName),
 		"--wd", strconv.Itoa(forJob.WarmupDuration),
@@ -303,7 +305,6 @@ func generateCommand(forJob job, resultsFile string, logFile *os.File) *exec.Cmd
 		"--wr", fmt.Sprintf("%f", forJob.WarmupRate),
 		"-t", strconv.Itoa(forJob.Threads),
 		"-u", strconv.Itoa(forJob.Timeout),
-		"-o", resultsFile,
 	}
 	for _, slave := range forJob.Slaves {
 		commandArgs = append(commandArgs, fmt.Sprintf("-s %s", slave))
