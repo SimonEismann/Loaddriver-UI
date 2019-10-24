@@ -35,7 +35,8 @@
     cursor: pointer;
   }
 
-.log:hover, .results:hover {
+  .log:hover,
+  .results:hover {
     background: gray;
     color: white;
   }
@@ -45,24 +46,14 @@
     padding: 0.2em 1em 0.2em 1em;
     cursor: pointer;
   }
-
-  li {
-    margin-left: 2em;
-  }
 </style>
 
 <div class="container">
   <div class="details">
     <span>ID:</span>
     <span>{job.id}</span>
-    <span>Used Slaves:</span>
-    <div>
-      <ul>
-        {#each job.slaves as slave}
-          <li>{slave}</li>
-        {/each}
-      </ul>
-    </div>
+    <span>Number of Slaves:</span>
+    <div>{job.slaves.length}</div>
     <span>Script used:</span>
     <span>{job.scriptName}</span>
     <span>Intensity file used:</span>

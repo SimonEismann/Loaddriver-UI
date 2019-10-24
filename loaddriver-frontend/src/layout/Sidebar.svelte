@@ -25,9 +25,9 @@
 
 <div class="container">
   <nav class="navbar">
-    <Link to="/" getProps={getLinkProps}>Home</Link>
     <Link to="dashboard" getProps={getLinkProps}>Dashboard</Link>
-    <Link to="jobs" getProps={getLinkProps}>Jobs</Link>
+    <Link to="jobs" getProps={getLinkProps}>Run Job</Link>
+    <Link to="job-configs" getProps={getLinkProps}>Job Configurations</Link>
     <Link to="intensities" getProps={getLinkProps}>Intensities</Link>
     <Link to="scripts" getProps={getLinkProps}>Scripts</Link>
     <Link to="history" getProps={getLinkProps}>History</Link>

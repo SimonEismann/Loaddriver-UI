@@ -15,7 +15,7 @@
     cursor: pointer;
     border: none;
     outline: none;
-    z-index: 99999;
+    z-index: 100;
   }
 </style>
 

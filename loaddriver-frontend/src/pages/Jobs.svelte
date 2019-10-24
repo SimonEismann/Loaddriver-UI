@@ -1,15 +1,34 @@
 <script>
-  import { fade } from "svelte/transition";
   import CustomButton from "../components/CustomButton.svelte";
   import ConsoleReader from "../components/ConsoleReader.svelte";
   import FloatingActionButton from "../components/FloatingActionButton.svelte";
+  import CustomSelect from "../components/CustomSelect.svelte";
+  import Modal from "../components/Modal.svelte";
+  import Job from "../model/job.js";
+  import SelectItem from "../model/select-item.js";
   import { API_ROOT } from "../env.js";
 
-  const startDefaultJob = async () => {
-    await fetch(`${API_ROOT}/jobs/default`, {
-      method: "POST",
-      mode: "cors"
-    });
+  let jobConfigurations = [];
+  let selectedJob = {};
+  let jobFormOpen = false;
+
+  const startJob = async () => {
+    console.log(selectedJob);
+    if (selectedJob.id == "default") {
+      await fetch(`${API_ROOT}/jobs/default`, {
+        method: "POST",
+        mode: "cors"
+      });
+    } else {
+      await fetch(`${API_ROOT}/jobs`, {
+        body: JSON.stringify(selectedJob),
+        headers: {
+          "Content-type": "application/json"
+        },
+        method: "POST",
+        mode: "cors"
+      });
+    }
   };
 
   const stopCurrentJob = async () => {
@@ -23,15 +42,21 @@
 <style>
   .container {
     padding: 1em;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     height: 100%;
     width: 100%;
+    overflow-y: auto;
+  }
+
+  .info-box {
+    width: 1280px;
+    margin: auto;
   }
 
   .button-group {
-    height: 15%;
+    margin: auto;
+    margin-top: 0.2em;
+    height: 10%;
+    margin-bottom: 1em;
   }
 
   .console {
@@ -39,28 +64,48 @@
     width: 1280px;
     margin: auto;
   }
+
+  h1 {
+    margin-bottom: 0.2em;
+  }
 </style>
 
+{#if jobFormOpen}
+  <Modal on:close={() => (jobFormOpen = false)}>
+    <div style="width: 500px; height: 500px; background: white;" />
+  </Modal>
+{/if}
+
 <div class="container">
-  <div class="button-group">
-    <h1>Default Job Configuration</h1>
-    <CustomButton
-      on:click={startDefaultJob}
-      backgroundColor="green"
-      size="1.2em"
-      value="Start" />
-    <CustomButton
-      on:click={stopCurrentJob}
-      backgroundColor="red"
-      size="1.2em"
-      value="Stop" />
+  <div class="info-box">
+    <h1>Run an experiment</h1>
+    <p>
+      To run an experiment, select the desired job configuration below and click
+      on "Start"
+    </p>
+    <CustomSelect
+      options={[new SelectItem('Default', {
+          id: 'default'
+        }), new SelectItem('B', {
+          id: 'default'
+        }), new SelectItem('C', { id: 'default' })]}
+      bind:value={selectedJob} />
+    <div class="button-group">
+      <CustomButton
+        on:click={startJob}
+        backgroundColor="green"
+        size="1.2em"
+        value="Start" />
+      <CustomButton
+        on:click={() => {
+          jobFormOpen = true;
+        }}
+        backgroundColor="red"
+        size="1.2em"
+        value="Stop" />
+    </div>
   </div>
   <div class="console">
     <ConsoleReader />
   </div>
-  <FloatingActionButton
-    tooltip="Queue a new job"
-    on:click={() => console.log('Test')}>
-    <i class="material-icons" style="font-size: 5em">add</i>
-  </FloatingActionButton>
 </div>

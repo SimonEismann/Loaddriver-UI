@@ -184,6 +184,7 @@ func handlePostJob(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	jobsMap[postedJob.Id] = postedJob
+	jobQueue <- postedJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
 }

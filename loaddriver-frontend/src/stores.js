@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-const createSidebar = () => {
+const createSidebarState = () => {
   const { update, subscribe } = writable(false);
 
   return {
@@ -9,4 +9,4 @@ const createSidebar = () => {
   }
 }
 
-export const sidebarState = createSidebar();
+export const sidebarState = createSidebarState();

@@ -31,12 +31,27 @@
 
   h1 {
     text-align: center;
+    margin-bottom: 0.2em;
+  }
+
+  p {
+    text-align: center;
+  }
+
+  .info {
     margin-bottom: 1em;
   }
 </style>
 
 <div class="container">
-  <h1>Job history</h1>
+  <div class="info">
+    <h1>Job history</h1>
+    <p>Here you can find all jobs, that have been run in the past.</p>
+    <p>
+      You can download the log file as well as the results file from a
+      particular job.
+    </p>
+  </div>
   {#if jobs.length === 0}
     <div class="job-card">
       <h3 style="text-align: center;">No jobs have been run yet</h3>

@@ -8,14 +8,14 @@
 <style>
   button {
     border: none;
-    padding: 0.5em;
+    padding: 0.3em;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 1em;
     font-weight: bold;
     cursor: pointer;
     border-radius: 10px;
+    box-shadow: var(--card__box_shadow);
   }
 </style>
 

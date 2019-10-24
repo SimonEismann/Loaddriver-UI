@@ -14,9 +14,4 @@
 <div class="container">
   <h1>Under construction</h1>
   <p>This page is currently under construction.</p>
-  <FloatingActionButton
-    tooltip="Queue a new job"
-    on:click={() => console.log('Test')}>
-    <i class="material-icons" style="font-size: 5em">add</i>
-  </FloatingActionButton>
 </div>
