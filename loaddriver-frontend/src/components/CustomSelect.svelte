@@ -24,7 +24,7 @@
     height: 30px;
     padding-left: 10px;
     font-size: 1em;
-    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow);
     border-radius: 3px;
     outline: none;
     cursor: pointer;
@@ -44,8 +44,8 @@
 
   .arrow {
     position: absolute;
-    right: 1px;
-    top: 8px;
+    right: 8px;
+    top: 10px;
     pointer-events: none;
   }
 </style>
@@ -61,9 +61,9 @@
   </select>
   <div class="arrow">
     {#if opened}
-      <i class="material-icons" style="font-size: 2em">arrow_drop_up</i>
+      <i class="fa fa-caret-up" style="font-size: 1.5em" />
     {:else}
-      <i class="material-icons" style="font-size: 2em">arrow_drop_down</i>
+      <i class="fa fa-caret-down" style="font-size: 1.5em" />
     {/if}
   </div>
 </div>

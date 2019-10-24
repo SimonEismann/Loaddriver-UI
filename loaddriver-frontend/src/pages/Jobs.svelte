@@ -13,7 +13,6 @@
   let jobFormOpen = false;
 
   const startJob = async () => {
-    console.log(selectedJob);
     if (selectedJob.id == "default") {
       await fetch(`${API_ROOT}/jobs/default`, {
         method: "POST",
@@ -40,15 +39,8 @@
 </script>
 
 <style>
-  .container {
-    padding: 1em;
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-  }
-
   .info-box {
-    width: 1280px;
+    width: 100%;
     margin: auto;
   }
 
@@ -61,8 +53,7 @@
 
   .console {
     height: 720px;
-    width: 1280px;
-    margin: auto;
+    width: 100%;
   }
 
   h1 {
@@ -76,36 +67,34 @@
   </Modal>
 {/if}
 
-<div class="container">
-  <div class="info-box">
-    <h1>Run an experiment</h1>
-    <p>
-      To run an experiment, select the desired job configuration below and click
-      on "Start"
-    </p>
-    <CustomSelect
-      options={[new SelectItem('Default', {
-          id: 'default'
-        }), new SelectItem('B', {
-          id: 'default'
-        }), new SelectItem('C', { id: 'default' })]}
-      bind:value={selectedJob} />
-    <div class="button-group">
-      <CustomButton
-        on:click={startJob}
-        backgroundColor="green"
-        size="1.2em"
-        value="Start" />
-      <CustomButton
-        on:click={() => {
-          jobFormOpen = true;
-        }}
-        backgroundColor="red"
-        size="1.2em"
-        value="Stop" />
-    </div>
+<div class="info-box">
+  <h1>Run an experiment</h1>
+  <p>
+    To run an experiment, select the desired job configuration below and click
+    on "Start"
+  </p>
+  <CustomSelect
+    options={[new SelectItem('Default', {
+        id: 'default'
+      }), new SelectItem('B', {
+        id: 'default'
+      }), new SelectItem('C', { id: 'default' })]}
+    bind:value={selectedJob} />
+  <div class="button-group">
+    <CustomButton
+      on:click={startJob}
+      backgroundColor="green"
+      size="1.2em"
+      value="Start" />
+    <CustomButton
+      on:click={() => {
+        jobFormOpen = true;
+      }}
+      backgroundColor="red"
+      size="1.2em"
+      value="Stop" />
   </div>
-  <div class="console">
-    <ConsoleReader />
-  </div>
+</div>
+<div class="console">
+  <ConsoleReader />
 </div>

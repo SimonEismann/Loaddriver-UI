@@ -2,17 +2,14 @@
   export let url = null;
   export let fileName = "";
 
-  let downloadButton;
-  let dataURL;
-
   const handleClick = async () => {
-    if(dataURL) {
-      window.URL.revokeObjectURL(dataURL)
-    }
     const response = await fetch(url);
     const fileContent = await response.blob();
-    dataURL = window.URL.createObjectURL(fileContent);
-    downloadButton.href = dataURL;
+    const dataURL = window.URL.createObjectURL(fileContent);
+    const a = document.createElement("a");
+    a.setAttribute("download", fileName);
+    a.setAttribute("href", dataURL);
+    a.click();
   };
 </script>
 
@@ -27,7 +24,6 @@
   role="button"
   download={fileName}
   href="/"
-  bind:this={downloadButton}
-  on:click={handleClick}>
+  on:click|preventDefault={handleClick}>
   <slot />
 </a>

@@ -1,5 +1,5 @@
 <script>
-  import HamburgerIcon from "../components/HamburgerIcon.svelte";
+  import HeaderNavBar from "../layout/HeaderNavBar.svelte";
 </script>
 
 <style>
@@ -8,12 +8,7 @@
     color: inherit;
     padding-bottom: 0;
     margin-bottom: 0;
-    margin-left: 1em;
-  }
-
-  .hamburger {
-    height: 2em;
-    width: 2.5em;
+    margin-right: 1em;
   }
 
   .container {
@@ -24,17 +19,15 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1em;
+    padding-left: 1em;
   }
 </style>
 
 <div class="container">
-  <div class="hamburger">
-    <HamburgerIcon />
-  </div>
   <div class="logo">
     <h1>
       <a href="/">LoadDriver-UI</a>
     </h1>
   </div>
+  <HeaderNavBar />
 </div>

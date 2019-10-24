@@ -1,7 +1,6 @@
 <script>
   import Chart from "chart.js";
   import { onMount, afterUpdate, onDestroy } from "svelte";
-  import { sidebarState } from "../stores.js";
   import FileDownloader from "./FileDownloader.svelte";
   import { API_ROOT } from "../env.js";
 
@@ -54,13 +53,10 @@
       }
     });
   };
-  onMount(() => {
-    subscription = sidebarState.subscribe(() => updateChart());
-  });
+
   afterUpdate(() => {
     updateChart();
   });
-  onDestroy(() => subscription());
 </script>
 
 <style>
@@ -70,7 +66,7 @@
     height: 100%;
     background-color: white;
     border-radius: 5px;
-    box-shadow: var(--card__box_shadow);
+    box-shadow: var(--shadow);
   }
 
   .details {

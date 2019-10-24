@@ -4,8 +4,11 @@
 
 <style>
   .container {
-    width: 100%;
+    width: 60em;
     height: 100%;
+    margin: auto;
+    padding-top: 2em;
+    padding-bottom: 2em;
   }
 </style>
 

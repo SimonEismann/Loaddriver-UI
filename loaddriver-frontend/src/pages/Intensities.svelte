@@ -6,15 +6,8 @@
 </script>
 
 <style>
-  .container {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    padding: 2em 0 0 0;
-  }
-
   .intensity-card {
-    width: 40%;
+    width: 100%;
     margin: auto;
   }
 
@@ -24,11 +17,9 @@
   }
 </style>
 
-<div class="container">
-  <h1>Intensity files</h1>
-  {#each intensityFiles as intensityFile}
-    <div class="intensity-card">
-      <IntensityFileCard {intensityFile} />
-    </div>
-  {/each}
-</div>
+<h1>Intensity files</h1>
+{#each intensityFiles as intensityFile}
+  <div class="intensity-card">
+    <IntensityFileCard {intensityFile} />
+  </div>
+{/each}

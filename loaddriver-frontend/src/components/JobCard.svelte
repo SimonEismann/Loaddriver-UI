@@ -17,7 +17,7 @@
       "log results";
     grid-template-columns: 1fr 1fr;
     border-radius: 5px;
-    box-shadow: var(--card__box_shadow);
+    box-shadow: var(--shadow);
   }
 
   .details {

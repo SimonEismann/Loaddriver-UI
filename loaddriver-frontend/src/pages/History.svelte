@@ -17,15 +17,8 @@
 </script>
 
 <style>
-  .container {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    padding: 2em 0 0 0;
-  }
-
   .job-card {
-    width: 40%;
+    width: 100%;
     margin: auto;
   }
 
@@ -43,24 +36,22 @@
   }
 </style>
 
-<div class="container">
-  <div class="info">
-    <h1>Job history</h1>
-    <p>Here you can find all jobs, that have been run in the past.</p>
-    <p>
-      You can download the log file as well as the results file from a
-      particular job.
-    </p>
-  </div>
-  {#if jobs.length === 0}
-    <div class="job-card">
-      <h3 style="text-align: center;">No jobs have been run yet</h3>
-    </div>
-  {:else}
-    {#each jobs as job}
-      <div class="job-card">
-        <JobCard {job} />
-      </div>
-    {/each}
-  {/if}
+<div class="info">
+  <h1>Job history</h1>
+  <p>Here you can find all jobs, that have been run in the past.</p>
+  <p>
+    You can download the log file as well as the results file from a particular
+    job.
+  </p>
 </div>
+{#if jobs.length === 0}
+  <div class="job-card">
+    <h3 style="text-align: center;">No jobs have been run yet</h3>
+  </div>
+{:else}
+  {#each jobs as job}
+    <div class="job-card">
+      <JobCard {job} />
+    </div>
+  {/each}
+{/if}
