@@ -51,7 +51,10 @@
 </style>
 
 <div class="wrapper">
-  <select on:click={handleClick} bind:value>
+  <select
+    on:click={handleClick}
+    on:focusout={() => (opened = false)}
+    bind:value>
     {#each options as option}
       <option value={option.value}>{option.label}</option>
     {/each}
