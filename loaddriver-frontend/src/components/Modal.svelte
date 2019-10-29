@@ -1,12 +1,24 @@
+<script context="module">
+  import { modalState } from "../stores.js";
+
+  export const open = (Component, props) => {
+    modalState.open(Component, props);
+  };
+
+  export const close = () => {
+    modalState.close();
+  };
+</script>
+
 <script>
   import { fade } from "svelte/transition";
-  import { onMount, createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
+  $: Component = $modalState.Component;
+  $: props = $modalState.props;
 
   const handleKeydown = event => {
-    if (event.key === "Escape") {
-      dispatch("close");
+    if (Component && event.key === "Escape") {
+      modalState.close();
     }
   };
 </script>
@@ -27,8 +39,6 @@
 
   .slot {
     position: relative;
-    width: 50vw;
-    height: 80vh;
     overflow: auto;
     background-color: white;
     z-index: 2;
@@ -43,14 +53,16 @@
 </style>
 
 <svelte:window on:keydown={handleKeydown} />
-<div
-  class="container"
-  transition:fade={{ duration: 100 }}
-  on:click={() => dispatch('close')}>
-  <div class="slot" on:click|stopPropagation>
-    <div class="closer" on:click={() => dispatch('close')}>
-      <i class="fa fa-times" />
+{#if Component}
+  <div
+    class="container"
+    transition:fade={{ duration: 100 }}
+    on:click={modalState.close}>
+    <div class="slot" on:click|stopPropagation>
+      <div class="closer" on:click={modalState.close}>
+        <i class="fa fa-times" />
+      </div>
+      <Component {...props} />
     </div>
-    <slot />
   </div>
-</div>
+{/if}

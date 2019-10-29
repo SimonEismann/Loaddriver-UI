@@ -2,6 +2,7 @@
   import Header from "./layout/Header.svelte";
   import Main from "./layout/Main.svelte";
   import Footer from "./layout/Footer.svelte";
+  import Modal from "./components/Modal.svelte";
   import { Router } from "svelte-routing";
   export let url = "";
 </script>
@@ -28,9 +29,9 @@
     grid-area: content;
     overflow: auto;
   }
-
 </style>
 
+<Modal />
 <Router {url}>
   <div class="main-container">
     <div id="header">

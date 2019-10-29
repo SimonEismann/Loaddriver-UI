@@ -7,7 +7,6 @@
 
 <style>
   .container {
-    margin-bottom: 1em;
     width: 100%;
     height: 100%;
     display: grid;
@@ -16,21 +15,19 @@
       "details details"
       "log results";
     grid-template-columns: 1fr 1fr;
-    border-radius: 5px;
-    box-shadow: var(--shadow);
   }
 
   .details {
     grid-area: details;
     padding: 0.5em 1em 0.5em 1em;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--line-color);
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
 
   .log {
     grid-area: log;
-    border-right: 1px solid black;
+    border-right: 1px solid var(--line-color);
     padding: 0.2em 1em 0.2em 1em;
     cursor: pointer;
   }

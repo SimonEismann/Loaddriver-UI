@@ -13,7 +13,7 @@
 
   .header {
     width: 100%;
-    border-bottom: 1px solid rgba(180, 180, 180, 0.4);
+    border-bottom: 1px solid var(--line-color);
     padding: 0.7em;
   }
 
@@ -25,7 +25,7 @@
 
 <div class="container" {style}>
   <div class="header">
-    <h1>{title}</h1>
+    <h2>{title}</h2>
   </div>
   <div class="body">
     <slot />

@@ -4,14 +4,13 @@
   import FloatingActionButton from "../components/FloatingActionButton.svelte";
   import Panel from "../components/Panel.svelte";
   import CustomSelect from "../components/CustomSelect.svelte";
-  import Modal from "../components/Modal.svelte";
+  import { open } from "../components/Modal.svelte";
   import Job from "../model/job.js";
   import SelectItem from "../model/select-item.js";
   import { API_ROOT } from "../env.js";
 
   let jobConfigurations = [];
   let selectedJob = {};
-  let jobFormOpen = false;
 
   const startJob = async () => {
     if (selectedJob.id == "default") {
@@ -52,11 +51,6 @@
   }
 </style>
 
-{#if jobFormOpen}
-  <Modal on:close={() => (jobFormOpen = false)}>
-    <div style="width: 500px; height: 500px; background: white;" />
-  </Modal>
-{/if}
 <Panel title="Run an experiment" style="margin-bottom: 1em;">
   <p>
     To run an experiment, select the desired job configuration below and click
@@ -77,7 +71,7 @@
       value="Start" />
     <CustomButton
       on:click={() => {
-        jobFormOpen = true;
+        open(Panel, { title: 'Test' });
       }}
       backgroundColor="red"
       size="1.2em"
