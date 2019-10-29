@@ -1,6 +1,5 @@
 <script>
   import Panel from "../components/Panel.svelte";
-  import CollapsibleTableRow from "../components/CollapsibleTableRow.svelte";
 </script>
 
 <style>
