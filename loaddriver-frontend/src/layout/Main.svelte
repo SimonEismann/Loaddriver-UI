@@ -1,7 +1,7 @@
 <script>
   import ConsoleReader from "../components/ConsoleReader.svelte";
   import History from "../pages/History.svelte";
-  import Jobs from "../pages/Jobs.svelte";
+  import RunJob from "../pages/RunJob.svelte";
   import Dashboard from "../pages/Dashboard.svelte";
   import SlaveList from "../pages/SlaveList.svelte";
   import Home from "../pages/Home.svelte";
@@ -17,9 +17,9 @@
     <Dashboard />
   </Page>
 </Route>
-<Route path="jobs">
+<Route path="run-job">
   <Page>
-    <Jobs />
+    <RunJob />
   </Page>
 </Route>
 <Route path="history">

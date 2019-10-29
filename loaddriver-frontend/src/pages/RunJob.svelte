@@ -2,6 +2,7 @@
   import CustomButton from "../components/CustomButton.svelte";
   import ConsoleReader from "../components/ConsoleReader.svelte";
   import FloatingActionButton from "../components/FloatingActionButton.svelte";
+  import Panel from "../components/Panel.svelte";
   import CustomSelect from "../components/CustomSelect.svelte";
   import Modal from "../components/Modal.svelte";
   import Job from "../model/job.js";
@@ -39,25 +40,15 @@
 </script>
 
 <style>
-  .info-box {
-    width: 100%;
-    margin: auto;
-  }
-
   .button-group {
     margin: auto;
     margin-top: 0.2em;
     height: 10%;
-    margin-bottom: 1em;
   }
 
   .console {
     height: 720px;
     width: 100%;
-  }
-
-  h1 {
-    margin-bottom: 0.2em;
   }
 </style>
 
@@ -66,9 +57,7 @@
     <div style="width: 500px; height: 500px; background: white;" />
   </Modal>
 {/if}
-
-<div class="info-box">
-  <h1>Run an experiment</h1>
+<Panel title="Run an experiment" style="margin-bottom: 1em;">
   <p>
     To run an experiment, select the desired job configuration below and click
     on "Start"
@@ -94,7 +83,9 @@
       size="1.2em"
       value="Stop" />
   </div>
-</div>
-<div class="console">
-  <ConsoleReader />
-</div>
+</Panel>
+<Panel title="Live Console">
+  <div class="console">
+    <ConsoleReader />
+  </div>
+</Panel>

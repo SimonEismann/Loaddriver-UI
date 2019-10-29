@@ -1,6 +1,11 @@
+<script>
+  import Panel from "../components/Panel.svelte";
+</script>
+
 <style>
 
 </style>
 
-<h1>Under construction</h1>
-<p>This page is currently under construction.</p>
+<Panel title="Under construction">
+  <p>This page is currently under construction.</p>
+</Panel>
