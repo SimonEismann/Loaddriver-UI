@@ -10,10 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var ()
-
-const ()
-
 type IP string
 
 type RegistryEntry struct {
