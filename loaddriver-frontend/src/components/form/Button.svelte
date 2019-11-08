@@ -2,13 +2,13 @@
   export let value;
   export let backgroundColor = "green";
   export let color = "white";
-  export let size = "1em";
+  export let size = "inherit";
 </script>
 
 <style>
   button {
     border: none;
-    padding: 0.5em;
+    padding: 0.4em;
     text-align: center;
     text-decoration: none;
     display: inline-block;

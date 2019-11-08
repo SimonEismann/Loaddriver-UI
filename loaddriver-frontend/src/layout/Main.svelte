@@ -8,7 +8,6 @@
   import Scripts from "../pages/Scripts.svelte";
   import Page from "../components/Page.svelte";
   import Intensities from "../pages/Intensities.svelte";
-  import JobConfigurations from "../pages/JobConfigurations.svelte";
   import { Route } from "svelte-routing";
 </script>
 
@@ -40,11 +39,6 @@
 <Route path="scripts">
   <Page>
     <Scripts />
-  </Page>
-</Route>
-<Route path="job-configs">
-  <Page>
-    <JobConfigurations />
   </Page>
 </Route>
 <Route path="">

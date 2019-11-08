@@ -1,12 +1,16 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"loaddriver-master/api"
 	"loaddriver-master/consoleEcho"
 	log "loaddriver-master/logger"
 	"loaddriver-master/pkg/jobs"
 	"loaddriver-master/pkg/registry"
+	"loaddriver-master/shared"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -28,10 +32,8 @@ func main() {
 	r.HandleFunc("/", api.PrintDescription)
 	r.Handle("/jobs/current/output", hub)
 	r.Handle("/registry", slaveRegistry)
-
-	// r.HandleFunc("/jobConfigs", handlePostJob).Methods(http.MethodPost)
-	// r.HandleFunc("/jobConfigs", handleGetJobs).Methods(http.MethodGet)
-
+	r.HandleFunc("/scripts", handleGetAllScripts).Methods(http.MethodGet)
+	r.HandleFunc("/intensities", handleGetAllIntensities).Methods(http.MethodGet)
 	go hub.Run()
 	go jobRunner.Start()
 	go slaveRegistry.StartCleanUpRoutine()
@@ -43,4 +45,42 @@ func main() {
 	if err != nil {
 		logger.WithField("func", "main").WithError(err).Error("Error starting server")
 	}
+}
+
+func handleGetAllScripts(w http.ResponseWriter, r *http.Request) {
+	files, err := ioutil.ReadDir(filepath.Join(shared.GetExecDir(), "scripts"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	var result []string
+	for _, file := range files {
+		result = append(result, file.Name())
+	}
+	resp, err := json.MarshalIndent(result, "", "\t")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func handleGetAllIntensities(w http.ResponseWriter, r *http.Request) {
+	files, err := ioutil.ReadDir(filepath.Join(shared.GetExecDir(), "intensities"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	var result []string
+	for _, file := range files {
+		result = append(result, file.Name())
+	}
+	resp, err := json.MarshalIndent(result, "", "\t")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
 }

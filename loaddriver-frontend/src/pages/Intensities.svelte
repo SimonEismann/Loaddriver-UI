@@ -10,7 +10,7 @@
 
 </style>
 
-<Panel title="Intensity files">
+<Panel title="Intensity files" subtitle="Currently available intensity files">
   {#each intensityFiles as intensityFile}
     <div class="intensity-card">
       <IntensityFileCard {intensityFile} />

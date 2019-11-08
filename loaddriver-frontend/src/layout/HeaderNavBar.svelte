@@ -47,8 +47,7 @@
   <Link to="dashboard" getProps={getLinkProps}>Dashboard</Link>
   <Link to="run-job" getProps={getLinkProps}>Run Job</Link>
   <Link to="history" getProps={getLinkProps}>History</Link>
-  <Link to="slaves" getProps={getLinkProps}>Slaves</Link>
-  <Link to="job-configs" getProps={getLinkProps}>Jobs</Link>
   <Link to="intensities" getProps={getLinkProps}>Intensities</Link>
   <Link to="scripts" getProps={getLinkProps}>Scripts</Link>
+  <Link to="slaves" getProps={getLinkProps}>Slaves</Link>
 </nav>

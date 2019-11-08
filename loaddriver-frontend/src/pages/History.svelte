@@ -19,10 +19,6 @@
 </script>
 
 <style>
-  .info {
-    margin-bottom: 1em;
-  }
-
   ul {
     list-style-type: none;
     margin: 0;
@@ -40,15 +36,10 @@
   }
 </style>
 
-<Panel title="Job history">
-  <div class="info">
-    <p>
-      Here you can find all jobs, that have been run in the past.
-      <br />
-      You can download the log file as well as the results file from a
-      particular job.
-    </p>
-  </div>
+<Panel
+  title="Job history"
+  subtitle="Here you can find all jobs, that have been run in the past. You can
+  download the log file as well as the results file from a particular job.">
 
   {#if jobs.length === 0}
     <div class="job-card">

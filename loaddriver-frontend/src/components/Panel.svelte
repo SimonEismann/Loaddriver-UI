@@ -1,5 +1,6 @@
 <script>
   export let title = "";
+  export let subtitle = "";
   export let style = "";
 </script>
 
@@ -21,11 +22,16 @@
     width: 100%;
     padding: 1em;
   }
+
+  .subtitle {
+    font-size: 0.9em;
+  }
 </style>
 
 <div class="container" {style}>
   <div class="header">
     <h2>{title}</h2>
+    <p class="subtitle">{subtitle}</p>
   </div>
   <div class="body">
     <slot />

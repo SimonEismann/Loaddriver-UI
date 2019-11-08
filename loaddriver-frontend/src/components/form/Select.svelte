@@ -1,6 +1,8 @@
 <script>
+  export let label;
+  export let value = null;
+  export let aria = `${new Date().getTime()}${Math.random()}`;
   export let options;
-  export let value;
 
   let opened = false;
 
@@ -50,10 +52,12 @@
   }
 </style>
 
+<label for={aria}>{label}</label>
 <div class="wrapper">
   <select
     on:click={handleClick}
     on:focusout={() => (opened = false)}
+    id={aria}
     bind:value>
     {#each options as option}
       <option value={option.value}>{option.label}</option>
