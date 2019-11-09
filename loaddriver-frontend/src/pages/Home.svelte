@@ -43,10 +43,13 @@
   <div class="info">
     <h3>HTTP Load Generator</h3>
     <p>
-      This application uses the HTTP Load Generator under the hood. The HTTP
-      Load Generator is a load generator designed to generate HTTP loads with
-      varying load intensities. It uses load intensity specifications as
-      specified by
+      This application uses the
+      <a href="https://github.com/joakimkistowski/HTTP-Load-Generator">
+        HTTP Load Generator
+      </a>
+      under the hood. The HTTP Load Generator is a load generator designed to
+      generate HTTP loads with varying load intensities. It uses load intensity
+      specifications as specified by
       <a href="http://descartes.tools/limbo">LIMBO</a>
       to generate loads that vary in intensity (number of requests per second)
       over time. The load generator logs application level data and supports
