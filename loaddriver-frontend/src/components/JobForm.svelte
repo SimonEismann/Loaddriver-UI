@@ -1,5 +1,6 @@
 <script>
   import Job from "../model/job.js";
+  import Script from "../model/script.js";
   import Select from "./form/Select.svelte";
   import MultiSelect from "./form/MultiSelect.svelte";
   import NumberInput from "./form/NumberInput.svelte";
@@ -15,7 +16,7 @@
   let slaves = [];
 
   onMount(async () => {
-    const scriptPromise = fetch(`${API_ROOT}/scripts`, {
+    const scriptPromise = fetch(`${API_ROOT}/scripts?names-only=true`, {
       headers: {
         "Content-type": "application/json"
       },
@@ -37,7 +38,9 @@
       mode: "cors"
     });
     intensityFiles = await (await intensityPromise).json();
-    scriptFiles = await (await scriptPromise).json();
+    scriptFiles = (await (await scriptPromise).json()).map(
+      script => script.name
+    );
     slaves = await (await slavesPromise).json();
     job.intensityFile = intensityFiles[0];
     job.scriptName = scriptFiles[0];

@@ -42,9 +42,7 @@
   download the log file as well as the results file from a particular job.">
 
   {#if jobs.length === 0}
-    <div class="job-card">
-      <hp style="text-align: center;">No jobs have been run yet</hp>
-    </div>
+      <p style="text-align: center;">No jobs have been run yet</p>
   {:else}
     <ul>
       {#each jobs as job}

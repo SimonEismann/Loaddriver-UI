@@ -1,6 +1,7 @@
 <script>
   export let value;
   export let backgroundColor = "green";
+  export let type = "button";
   export let color = "white";
   export let size = "inherit";
 </script>
@@ -21,6 +22,7 @@
 
 <button
   on:click
+  {type}
   style="background-color: {backgroundColor}; color: {color}; font-size: {size}">
   {value}
 </button>

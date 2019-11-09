@@ -40,7 +40,7 @@
   style="margin-bottom: 1em;">
   <JobForm on:submit={e => startJob(e.detail.job)}>
     <div class="button-group">
-      <Button backgroundColor="green" value="Start" size="1.1em" />
+      <Button type="submit" backgroundColor="green" value="Start" size="1.1em" />
     </div>
   </JobForm>
 </Panel>

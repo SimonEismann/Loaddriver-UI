@@ -67,6 +67,7 @@ func NewJobRunner(r *mux.Router, consoleChan chan []byte, slaveRegistry *registr
 		killSuccess:   make(chan error),
 		jobsMap:       make(map[string]job),
 		nextJobChan:   make(chan job),
+		jobsDone:      make([]job, 0),
 		slaveRegistry: slaveRegistry,
 	}
 	r.HandleFunc("", result.handlePostJob).Methods(http.MethodPost)
