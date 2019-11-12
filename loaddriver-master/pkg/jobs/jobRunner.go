@@ -32,6 +32,49 @@ type job struct {
 	Timeout        int      `json:"timeout"`
 }
 
+type jobQueue struct {
+	in    chan<- interface{}
+	out   <-chan interface{}
+	queue []interface{}
+}
+
+func newJobQueue() jobQueue {
+	in := make(chan interface{})
+	out := make(chan interface{})
+	queue := make([]interface{}, 0)
+	outChan := func() chan interface{} {
+		if len(queue) == 0 {
+			return nil
+		}
+		return out
+	}
+	next := func() interface{} {
+		if len(queue) == 0 {
+			return nil
+		}
+		return queue[0]
+	}
+	go func() {
+		for in != nil || len(queue) != 0 {
+			select {
+			case job, ok := <-in:
+				if ok {
+					queue = append(queue, job)
+				} else {
+					in = nil
+				}
+			case outChan() <- next():
+				queue = queue[1:]
+			}
+		}
+	}()
+	return jobQueue{
+		in:    in,
+		out:   out,
+		queue: queue,
+	}
+}
+
 func NewDefaultJob(slaves []string) job {
 	return job{
 		Id:             time.Now().Format("02-01-2006_15:04:05"),
@@ -46,15 +89,19 @@ func NewDefaultJob(slaves []string) job {
 	}
 }
 
+type jobMapEntry struct {
+	job
+	done bool
+}
+
 type jobRunner struct {
 	Router        *mux.Router
 	logger        *logger.StandardLogger
 	consoleChan   chan []byte
 	killChan      chan struct{}
 	killSuccess   chan error
-	jobsMap       map[string]job
-	jobsDone      []job
-	nextJobChan   chan job
+	jobsMap       map[string]jobMapEntry
+	jobQueue      jobQueue
 	slaveRegistry *registry.Registry
 }
 
@@ -65,13 +112,13 @@ func NewJobRunner(r *mux.Router, consoleChan chan []byte, slaveRegistry *registr
 		consoleChan:   consoleChan,
 		killChan:      make(chan struct{}),
 		killSuccess:   make(chan error),
-		jobsMap:       make(map[string]job),
-		nextJobChan:   make(chan job),
-		jobsDone:      make([]job, 0),
+		jobsMap:       make(map[string]jobMapEntry),
+		jobQueue:      newJobQueue(),
 		slaveRegistry: slaveRegistry,
 	}
-	r.HandleFunc("", result.handlePostJob).Methods(http.MethodPost)
 	r.HandleFunc("", result.handleGetJobs).Methods(http.MethodGet)
+	r.HandleFunc("", result.handlePostJob).Methods(http.MethodPost)
+	r.HandleFunc("/queued", result.handleGetJobsQueued).Methods(http.MethodGet)
 	r.HandleFunc("/done", result.handleGetJobsDone).Methods(http.MethodGet)
 	r.HandleFunc("/default", result.handlePostJobDefault).Methods(http.MethodPost)
 	r.HandleFunc("/current", result.handleDeleteJobCurrent).Methods(http.MethodDelete)
@@ -82,22 +129,38 @@ func NewJobRunner(r *mux.Router, consoleChan chan []byte, slaveRegistry *registr
 }
 
 func (jq *jobRunner) Start() {
-	for nextJob := range jq.nextJobChan {
-		jq.logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Starting job with ID %s", nextJob.Id))
-		err := jq.runJob(nextJob)
+	for nextJob := range jq.jobQueue.out {
+		jq.logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Starting job with ID %s", nextJob.(job).Id))
+		err := jq.runJob(nextJob.(job))
 		if err != nil {
 			jq.logger.WithField("func", "jobConsumer").Error("Job finished with errors")
 		} else {
-			jq.logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Job with ID %s finished", nextJob.Id))
+			jq.logger.WithField("func", "jobConsumer").Infof("Job with ID %s finished", nextJob.(job).Id)
 		}
-		jq.jobsDone = append(jq.jobsDone, nextJob)
+		jq.jobsMap[nextJob.(job).Id] = jobMapEntry{nextJob.(job), true}
 	}
 }
 
-func (jq *jobRunner) handleGetJobs(w http.ResponseWriter, req *http.Request) {
-	var jobs []job
+func (jq *jobRunner) handleGetJobsQueued(w http.ResponseWriter, req *http.Request) {
+	jobs := make([]job, 0)
 	for _, v := range jq.jobsMap {
-		jobs = append(jobs, v)
+		if !v.done {
+			jobs = append(jobs, v.job)
+		}
+	}
+	resp, err := json.MarshalIndent(jobs, "", "\t")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func (jq *jobRunner) handleGetJobs(w http.ResponseWriter, req *http.Request) {
+	jobs := make([]job, 0)
+	for _, v := range jq.jobsMap {
+		jobs = append(jobs, v.job)
 	}
 	resp, err := json.MarshalIndent(jobs, "", "\t")
 	if err != nil {
@@ -167,7 +230,13 @@ func (jq *jobRunner) handleGetJobResults(w http.ResponseWriter, req *http.Reques
 }
 
 func (jq *jobRunner) handleGetJobsDone(w http.ResponseWriter, req *http.Request) {
-	resp, err := json.MarshalIndent(jq.jobsDone, "", "\t")
+	var jobs []job
+	for _, v := range jq.jobsMap {
+		if v.done {
+			jobs = append(jobs, v.job)
+		}
+	}
+	resp, err := json.MarshalIndent(jobs, "", "\t")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -188,8 +257,8 @@ func (jq *jobRunner) handlePostJob(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	jq.jobsMap[postedJob.Id] = postedJob
-	jq.nextJobChan <- postedJob
+	jq.jobsMap[postedJob.Id] = jobMapEntry{postedJob, false}
+	jq.jobQueue.in <- postedJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
 }
@@ -200,8 +269,8 @@ func (jq *jobRunner) handlePostJobDefault(w http.ResponseWriter, req *http.Reque
 		allSlaves = append(allSlaves, string(slave.Location))
 	}
 	newJob := NewDefaultJob(allSlaves)
-	jq.jobsMap[newJob.Id] = newJob
-	jq.nextJobChan <- newJob
+	jq.jobsMap[newJob.Id] = jobMapEntry{newJob, false}
+	jq.jobQueue.in <- newJob
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, newJob.Id))
 }
