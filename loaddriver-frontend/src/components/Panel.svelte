@@ -10,6 +10,7 @@
     box-shadow: var(--shadow);
     background: white;
     border-radius: 2px;
+    margin: 1em 0;
   }
 
   .header {

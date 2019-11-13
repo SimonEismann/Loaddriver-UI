@@ -1,6 +1,21 @@
 <script>
   export let accept;
-  export let files;
+  export let files = null;
+  export let file = null;
+  export let fileContent = null;
+  $: file = files ? files[0] : null;
+  $: {
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      reader.onload = event => {
+        fileContent = event.target.result;
+      };
+      reader.onerror = () => {
+        fileContent = "Error during reading of file";
+      };
+    }
+  }
 </script>
 
 <style>

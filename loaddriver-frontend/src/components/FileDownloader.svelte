@@ -3,13 +3,19 @@
   export let fileName = "";
 
   const handleClick = async () => {
-    const response = await fetch(url);
-    const fileContent = await response.blob();
-    const dataURL = window.URL.createObjectURL(fileContent);
-    const a = document.createElement("a");
-    a.setAttribute("download", fileName);
-    a.setAttribute("href", dataURL);
-    a.click();
+    try {
+      const response = await fetch(url, {
+        mode: "cors"
+      });
+      const fileContent = await response.blob();
+      const dataURL = window.URL.createObjectURL(fileContent);
+      const a = document.createElement("a");
+      a.setAttribute("download", fileName);
+      a.setAttribute("href", dataURL);
+      a.click();
+    } catch (error) {
+      console.log(error);
+    }
   };
 </script>
 

@@ -39,7 +39,7 @@
   }
 </style>
 
-<Panel title="Welcome" style="margin-bottom: 2em;">
+<Panel title="Welcome">
   <div class="info">
     <h3>HTTP Load Generator</h3>
     <p>

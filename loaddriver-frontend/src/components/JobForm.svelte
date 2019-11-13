@@ -1,6 +1,6 @@
 <script>
   import Job from "../model/job.js";
-  import Script from "../model/script.js";
+  import TextFile from "../model/text-file.js";
   import Select from "./form/Select.svelte";
   import MultiSelect from "./form/MultiSelect.svelte";
   import NumberInput from "./form/NumberInput.svelte";
@@ -23,7 +23,7 @@
       method: "GET",
       mode: "cors"
     });
-    const intensityPromise = fetch(`${API_ROOT}/intensities`, {
+    const intensityPromise = fetch(`${API_ROOT}/intensities?names-only=true`, {
       headers: {
         "Content-type": "application/json"
       },
@@ -44,7 +44,7 @@
     slaves = await (await slavesPromise).json();
     job.intensityFile = intensityFiles[0];
     job.scriptName = scriptFiles[0];
-    job.slaves = slaves;
+    job.slaves = slaves.map(s => s.location);
   });
 </script>
 
@@ -88,6 +88,6 @@
     bind:values={job.slaves}
     aria="select-slaves"
     label="Slaves"
-    options={slaves} />
+    options={slaves.map(s => s.location)} />
   <slot />
 </form>

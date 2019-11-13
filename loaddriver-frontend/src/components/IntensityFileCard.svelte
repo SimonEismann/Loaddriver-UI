@@ -61,18 +61,15 @@
 
 <style>
   .container {
-    margin-bottom: 1em;
     width: 100%;
     height: 100%;
     background-color: white;
-    border-radius: 5px;
-    box-shadow: var(--shadow);
   }
 
   .details {
     height: 80%;
     padding: 0.5em 1em 0.5em 1em;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--line-color);
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
@@ -102,8 +99,8 @@
     </canvas>
   </div>
   <FileDownloader
-    fileName={`${intensityFile.id}.csv`}
-    url={`${API_ROOT}/intensities/${intensityFile.id}`}>
+    fileName={`${intensityFile.name}.csv`}
+    url={`${API_ROOT}/intensities/${intensityFile.name}`}>
     <div class="download">Download</div>
   </FileDownloader>
 </div>

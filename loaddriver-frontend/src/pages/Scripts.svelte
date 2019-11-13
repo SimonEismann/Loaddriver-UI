@@ -3,28 +3,17 @@
   import FileUploader from "../components/form/FileUploader.svelte";
   import Button from "../components/form/Button.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
+  import TextFile from "../model/text-file.js";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
   import { API_ROOT } from "../env.js";
 
   let availableScripts = [];
-  let selectedFiles = null;
-  let firstFile = null;
-  let fileContent = null;
-  $: firstFile = selectedFiles ? selectedFiles[0] : null;
-  $: {
-    if (firstFile) {
-      const reader = new FileReader();
-      reader.readAsText(firstFile, "UTF-8");
-      reader.onload = event => {
-        fileContent = event.target.result;
-      };
-      reader.onerror = () => {
-        fileContent = "Error during reading of file";
-      };
-    }
-  }
-  onMount(async () => {
+  let filesBinding = null;
+  let selectedFile = null;
+  let selectedFileContent = null;
+
+  const fetchScripts = async () => {
     try {
       const promise = await fetch(`${API_ROOT}/scripts`, {
         headers: {
@@ -34,19 +23,27 @@
         mode: "cors"
       });
       availableScripts = await promise.json();
-    } catch (error) {}
-  });
+      filesBinding = null;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  onMount(fetchScripts);
 
   const upload = async () => {
     try {
       await fetch(`${API_ROOT}/scripts`, {
-        body: JSON.stringify(new Script(firstFile.name, fileContent)),
+        body: JSON.stringify(
+          new TextFile(selectedFile.name, selectedFileContent)
+        ),
         headers: {
           "Content-type": "application/json"
         },
         method: "POST",
         mode: "cors"
       });
+      fetchScripts();
     } catch (error) {
       console.log(error);
     }
@@ -89,12 +86,16 @@
   style="margin-bottom: 1em;">
   <form on:submit|preventDefault={upload}>
     <div class="file-uploader">
-      <FileUploader accept=".lua" bind:files={selectedFiles} />
+      <FileUploader
+        accept=".lua"
+        bind:file={selectedFile}
+        bind:fileContent={selectedFileContent}
+        bind:files={filesBinding} />
     </div>
-    {#if firstFile}
-      <div class="script-preview" transition:slide>
+    {#if selectedFile}
+      <div transition:slide>
         <h3>Script Preview</h3>
-        <textarea readonly rows="40" value={fileContent} />
+        <textarea readonly rows="40" value={selectedFileContent} />
         <Button type="submit" value="Upload" backgroundColor="#0A69D9" />
       </div>
     {/if}
@@ -110,9 +111,7 @@
         <li>
           <CollapsibleListElement>
             <div slot="master">{script.name}</div>
-            <div slot="detail">
-              <textarea readonly rows="40" value={script.content} />
-            </div>
+            <textarea slot="detail" readonly rows="40" value={script.content} />
           </CollapsibleListElement>
         </li>
       {/each}
