@@ -23,7 +23,6 @@
         mode: "cors"
       });
       availableScripts = await promise.json();
-      filesBinding = null;
     } catch (error) {
       console.log(error);
     }
@@ -44,6 +43,7 @@
         mode: "cors"
       });
       fetchScripts();
+      filesBinding = null;
     } catch (error) {
       console.log(error);
     }

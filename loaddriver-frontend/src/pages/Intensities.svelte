@@ -5,15 +5,12 @@
   import Button from "../components/form/Button.svelte";
   import Panel from "../components/Panel.svelte";
   import TextFile from "../model/text-file.js";
+  import IntensityData from "../model/intensity-data.js";
   import { API_ROOT } from "../env.js";
   import { slide } from "svelte/transition";
   import { onMount } from "svelte";
 
-  let intensityFiles = [
-    new TextFile("", ""),
-    new TextFile("", ""),
-    new TextFile("", "")
-  ];
+  let intensityFiles = [];
 
   let filesBinding = null;
   let selectedFile = null;
@@ -29,7 +26,9 @@
         mode: "cors"
       });
       intensityFiles = await promise.json();
-      filesBinding = null;
+      intensityFiles = intensityFiles.map(
+        file => new IntensityData(file.name, file.content)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -50,6 +49,7 @@
         mode: "cors"
       });
       fetchIntensities();
+      filesBinding = null;
     } catch (error) {
       console.log(error);
     }
@@ -109,18 +109,22 @@
 </Panel>
 
 <Panel title="Available Intensities" subtitle="Currently available Intensities">
-  <ul>
-    {#each intensityFiles as intensityFile}
-      <li>
-        <CollapsibleListElement>
-          <div slot="master">{intensityFile.name}</div>
-          <div slot="detail">
-            <div class="intensity-card">
-              <IntensityFileCard {intensityFile} />
+  {#if intensityFiles && intensityFiles.length != 0}
+    <ul>
+      {#each intensityFiles as intensityFile}
+        <li>
+          <CollapsibleListElement>
+            <div slot="master">{intensityFile.fileName}</div>
+            <div slot="detail">
+              <div class="intensity-card">
+                <IntensityFileCard {intensityFile} />
+              </div>
             </div>
-          </div>
-        </CollapsibleListElement>
-      </li>
-    {/each}
-  </ul>
+          </CollapsibleListElement>
+        </li>
+      {/each}
+    </ul>
+  {:else}
+    <p style="text-align: center;">No Intensities currently available</p>
+  {/if}
 </Panel>
