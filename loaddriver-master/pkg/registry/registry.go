@@ -13,8 +13,8 @@ import (
 type IP string
 
 type registryEntry struct {
-	Location   IP        `json:"Location"`
-	LastUpdate time.Time `json:"LastUpdate"`
+	Location   IP        `json:"location"`
+	LastUpdate time.Time `json:"lastUpdate"`
 }
 
 type Registry struct {

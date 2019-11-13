@@ -229,7 +229,7 @@ func (jq *jobRunner) handleGetJobResults(w http.ResponseWriter, req *http.Reques
 }
 
 func (jq *jobRunner) handleGetJobsDone(w http.ResponseWriter, req *http.Request) {
-	var jobs []job
+	jobs := make([]job, 0)
 	for _, v := range jq.jobsMap {
 		if v.done {
 			jobs = append(jobs, v.job)
