@@ -15,7 +15,6 @@ func PrintDescription(w http.ResponseWriter, r *http.Request) {
 		"POST /intensities":              "Upload an intensity file to the server",
 		"GET /intensities/{fileName}":    "Returns the intensity file at the specified location",
 		"POST /jobs":                     "Queue an experiment with all registered slaves",
-		"POST /jobs/default":             "Queue the default experiment with all registered slaves",
 		"GET /jobs":                      "Lists all jobs",
 		"GET /jobs/done":                 "Lists all done jobs",
 		"GET /jobs/{jobId}":              "Get the current status of the specified job",

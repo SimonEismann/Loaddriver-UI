@@ -12,27 +12,36 @@ import (
 
 type IP string
 
-type RegistryEntry struct {
-	Location   IP
-	LastUpdate time.Time
+type registryEntry struct {
+	Location   IP        `json:"Location"`
+	LastUpdate time.Time `json:"LastUpdate"`
 }
 
 type Registry struct {
 	log    *logrus.Entry
-	Slaves map[IP]RegistryEntry
+	Slaves map[IP]registryEntry
 }
 
 func New() *Registry {
 	return &Registry{
 		log:    logger.NewLogger().WithField("comp", "registry"),
-		Slaves: make(map[IP]RegistryEntry),
+		Slaves: make(map[IP]registryEntry),
 	}
 }
 
 func (r *Registry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet {
+		slaves := make([]registryEntry, 0)
+		for _, v := range r.Slaves {
+			slaves = append(slaves, v)
+		}
+		resp, err := json.MarshalIndent(slaves, "", "\t")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(r.getCurrentSlaves())
+		w.Write(resp)
 		return
 	}
 	if req.Method == http.MethodPut {
@@ -62,7 +71,7 @@ func (r *Registry) Put(slave IP) {
 	} else {
 		r.log.Infof("New slave registered under %s", slaveIP)
 	}
-	r.Slaves[slaveIP] = RegistryEntry{
+	r.Slaves[slaveIP] = registryEntry{
 		Location:   slaveIP,
 		LastUpdate: time.Now(),
 	}

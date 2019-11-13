@@ -11,13 +11,14 @@ import (
 	"loaddriver-master/pkg/registry"
 	"loaddriver-master/shared"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
-type scriptPayload struct {
+type filePayload struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`
 }
@@ -41,7 +42,11 @@ func main() {
 	r.HandleFunc("/scripts", handleGetAllScriptNames).Queries("names-only", "true").Methods(http.MethodGet)
 	r.HandleFunc("/scripts", handleGetAllScripts).Methods(http.MethodGet)
 	r.HandleFunc("/scripts", handlePostScript).Methods(http.MethodPost)
+	r.HandleFunc("/intensities", handleGetAllIntensityFileNames).Queries("names-only", "true").Methods(http.MethodGet)
 	r.HandleFunc("/intensities", handleGetAllIntensities).Methods(http.MethodGet)
+	r.HandleFunc("/intensities", handlePostIntensity).Methods(http.MethodPost)
+	r.PathPrefix("/intensities/").Handler(http.StripPrefix("/intensities/", http.FileServer(http.Dir("./intensities/"))))
+	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts/"))))
 	go hub.Run()
 	go jobRunner.Start()
 	go slaveRegistry.StartCleanUpRoutine()
@@ -49,7 +54,7 @@ func main() {
 	err := http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{"Authorization", "X-Requested-With", "Content-Type"}),
 		handlers.AllowedMethods([]string{http.MethodPost, http.MethodDelete, http.MethodGet, http.MethodPut, http.MethodOptions}),
-		handlers.AllowCredentials())(r))
+		handlers.AllowCredentials())(handlers.LoggingHandler(os.Stdout, r)))
 	if err != nil {
 		logger.WithField("func", "main").WithError(err).Error("Error starting server")
 	}
@@ -61,9 +66,9 @@ func handleGetAllScriptNames(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var result []scriptPayload
+	var result []filePayload
 	for _, file := range files {
-		result = append(result, scriptPayload{Name: file.Name()})
+		result = append(result, filePayload{Name: file.Name()})
 	}
 	resp, err := json.MarshalIndent(result, "", "\t")
 	if err != nil {
@@ -80,13 +85,13 @@ func handleGetAllScripts(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var result []scriptPayload
+	result := make([]filePayload, 0)
 	for _, file := range files {
 		content, err := ioutil.ReadFile(filepath.Join(shared.GetExecDir(), "scripts", file.Name()))
 		if err != nil {
 			logger.WithField("func", "handleGetAllScripts").WithError(err).Errorf("Could not read file named %s", file.Name())
 		}
-		result = append(result, scriptPayload{Name: file.Name(), Content: string(content)})
+		result = append(result, filePayload{Name: file.Name(), Content: string(content)})
 	}
 	resp, err := json.MarshalIndent(result, "", "\t")
 	if err != nil {
@@ -99,7 +104,7 @@ func handleGetAllScripts(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePostScript(w http.ResponseWriter, r *http.Request) {
-	postedScript := scriptPayload{}
+	postedScript := filePayload{}
 	err := json.NewDecoder(r.Body).Decode(&postedScript)
 	defer r.Body.Close()
 	if err != nil {
@@ -107,8 +112,7 @@ func handlePostScript(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println(postedScript.Name)
-	err = ioutil.WriteFile(filepath.Join(shared.GetExecDir(), "scripts", postedScript.Name), []byte(postedScript.Content), 0777)
+	err = ioutil.WriteFile(filepath.Join(shared.GetExecDir(), "scripts", postedScript.Name), []byte(postedScript.Content), 0666)
 	if err != nil {
 		logger.WithField("func", "handlePostScript").WithError(err).Error("Could not create file")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -118,7 +122,7 @@ func handlePostScript(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("location", fmt.Sprintf("%s/%s", r.URL.Path, postedScript.Name))
 }
 
-func handleGetAllIntensities(w http.ResponseWriter, r *http.Request) {
+func handleGetAllIntensityFileNames(w http.ResponseWriter, r *http.Request) {
 	files, err := ioutil.ReadDir(filepath.Join(shared.GetExecDir(), "intensities"))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -130,9 +134,53 @@ func handleGetAllIntensities(w http.ResponseWriter, r *http.Request) {
 	}
 	resp, err := json.MarshalIndent(result, "", "\t")
 	if err != nil {
+		logger.WithField("func", "handleGetAllIntensities").WithError(err).Errorf("Marshalling failed")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(resp)
+}
+
+func handleGetAllIntensities(w http.ResponseWriter, r *http.Request) {
+	files, err := ioutil.ReadDir(filepath.Join(shared.GetExecDir(), "intensities"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	result := make([]filePayload, 0)
+	for _, file := range files {
+		content, err := ioutil.ReadFile(filepath.Join(shared.GetExecDir(), "intensities", file.Name()))
+		if err != nil {
+			logger.WithField("func", "handleGetAllIntensities").WithError(err).Errorf("Could not read file named %s", file.Name())
+		}
+		result = append(result, filePayload{Name: file.Name(), Content: string(content)})
+	}
+	resp, err := json.MarshalIndent(result, "", "\t")
+	if err != nil {
+		logger.WithField("func", "handleGetAllIntensities").WithError(err).Errorf("Marshalling failed")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func handlePostIntensity(w http.ResponseWriter, r *http.Request) {
+	postedIntensity := filePayload{}
+	err := json.NewDecoder(r.Body).Decode(&postedIntensity)
+	defer r.Body.Close()
+	if err != nil {
+		logger.WithField("func", "handlePostIntensity").WithError(err).Error("Could not parse body")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = ioutil.WriteFile(filepath.Join(shared.GetExecDir(), "intensities", postedIntensity.Name), []byte(postedIntensity.Content), 0666)
+	if err != nil {
+		logger.WithField("func", "handlePostIntensity").WithError(err).Error("Could not create file")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("location", fmt.Sprintf("%s/%s", r.URL.Path, postedIntensity.Name))
 }

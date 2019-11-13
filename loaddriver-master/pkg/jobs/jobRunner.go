@@ -120,7 +120,6 @@ func NewJobRunner(r *mux.Router, consoleChan chan []byte, slaveRegistry *registr
 	r.HandleFunc("", result.handlePostJob).Methods(http.MethodPost)
 	r.HandleFunc("/queued", result.handleGetJobsQueued).Methods(http.MethodGet)
 	r.HandleFunc("/done", result.handleGetJobsDone).Methods(http.MethodGet)
-	r.HandleFunc("/default", result.handlePostJobDefault).Methods(http.MethodPost)
 	r.HandleFunc("/current", result.handleDeleteJobCurrent).Methods(http.MethodDelete)
 	r.HandleFunc("/{jobId}", result.handleGetJobByID).Methods(http.MethodGet)
 	r.HandleFunc("/{jobId}/log", result.handleGetJobLog).Methods(http.MethodGet)
@@ -263,18 +262,6 @@ func (jq *jobRunner) handlePostJob(w http.ResponseWriter, req *http.Request) {
 	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
 }
 
-func (jq *jobRunner) handlePostJobDefault(w http.ResponseWriter, req *http.Request) {
-	var allSlaves []string
-	for _, slave := range jq.slaveRegistry.Slaves {
-		allSlaves = append(allSlaves, string(slave.Location))
-	}
-	newJob := NewDefaultJob(allSlaves)
-	jq.jobsMap[newJob.Id] = jobMapEntry{newJob, false}
-	jq.jobQueue.in <- newJob
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, newJob.Id))
-}
-
 func (jq *jobRunner) handleDeleteJobCurrent(w http.ResponseWriter, r *http.Request) {
 	jq.killChan <- struct{}{}
 	select {
@@ -349,16 +336,15 @@ func (jq *jobRunner) runJob(jobToStart job) error {
 		err := cmd.Process.Kill()
 		jq.killSuccess <- err
 		if err == nil {
-			jq.logger.Println("Job successfully stopped")
+			jq.logger.Info("Job successfully stopped")
 			return nil
 		}
-		jq.logger.WithError(err).Println("Error occured while killing process")
+		jq.logger.WithError(err).Error("Error occured while killing process")
 		return err
 	}
 }
 
 func (jq *jobRunner) generateCommand(forJob job, resultsFile string, logFile *os.File) *exec.Cmd {
-	jq.logger.Info(resultsFile)
 	execDir := shared.GetExecDir()
 	commandArgs := []string{
 		"-jar", filepath.Join(execDir, "httploadgenerator.jar"),
