@@ -1,5 +1,3 @@
-import Point from "chart.js";
-
 export default class IntensityData {
   constructor(fileName, csv) {
     this.fileName = fileName;

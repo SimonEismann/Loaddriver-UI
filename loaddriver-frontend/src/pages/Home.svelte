@@ -19,6 +19,7 @@
 
   .info {
     padding: 0 1em 1em 1em;
+    text-align: justify;
   }
 
   pre {

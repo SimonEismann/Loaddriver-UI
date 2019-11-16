@@ -1,8 +1,10 @@
 <script>
+  import Tooltip from "../Tooltip.svelte";
   export let label;
   export let value = null;
   export let aria = `${new Date().getTime()}${Math.random()}`;
   export let options;
+  export let tooltip = null;
 
   let opened = false;
 
@@ -52,7 +54,12 @@
   }
 </style>
 
-<label for={aria}>{label}</label>
+<label for={aria}>
+  {label}
+  {#if tooltip}
+    <Tooltip text={tooltip} />
+  {/if}
+</label>
 <div class="wrapper">
   <select
     on:click={handleClick}

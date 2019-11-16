@@ -1,8 +1,10 @@
 <script>
+  import Tooltip from "../Tooltip.svelte";
   export let label;
   export let values = [];
   export let options;
   export let aria = `${new Date().getTime()}${Math.random()}`;
+  export let tooltip = null;
 </script>
 
 <style>
@@ -16,7 +18,12 @@
   }
 </style>
 
-<label for={aria}>{label}</label>
+<label for={aria}>
+  {label}
+  {#if tooltip}
+    <Tooltip text={tooltip} />
+  {/if}
+</label>
 <div class="wrapper">
   {#each options as option}
     <label>

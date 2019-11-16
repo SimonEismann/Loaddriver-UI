@@ -23,10 +23,6 @@
     width: 100%;
     padding: 1em;
   }
-
-  .subtitle {
-    font-size: 0.9em;
-  }
 </style>
 
 <div class="container" {style}>
