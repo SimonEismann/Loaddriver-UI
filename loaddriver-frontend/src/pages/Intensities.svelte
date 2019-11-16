@@ -1,5 +1,6 @@
 <script>
   import IntensityFileCard from "../components/IntensityFileCard.svelte";
+  import IntensityChart from "../components/IntensityChart.svelte";
   import FileUploader from "../components/form/FileUploader.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
   import Button from "../components/form/Button.svelte";
@@ -15,7 +16,10 @@
   let filesBinding = null;
   let selectedFile = null;
   let selectedFileContent = null;
-
+  $: preview =
+    selectedFile && selectedFileContent
+      ? new IntensityData(selectedFile.name, selectedFileContent)
+      : null;
   const fetchIntensities = async () => {
     try {
       const promise = await fetch(`${API_ROOT}/intensities`, {
@@ -63,12 +67,6 @@
     align-content: center;
   }
 
-  textarea {
-    margin: 0.5em 0;
-    width: 100%;
-    resize: none;
-  }
-
   ul {
     list-style-type: none;
     margin: 0;
@@ -101,8 +99,15 @@
     {#if selectedFile}
       <div class="script-preview" transition:slide>
         <h3>Intensity Preview</h3>
-        <textarea readonly rows="40" value={selectedFileContent} />
+        {#if preview}
+          <IntensityChart data={preview.data} />
+        {/if}
         <Button type="submit" value="Upload" backgroundColor="#0A69D9" />
+        <Button
+          type="button"
+          value="Clear"
+          backgroundColor="red"
+          on:click={() => (filesBinding = null)} />
       </div>
     {/if}
   </form>

@@ -13,9 +13,8 @@
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-weight: bold;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 3px;
     box-shadow: var(--shadow);
   }
 </style>

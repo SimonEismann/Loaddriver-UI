@@ -97,6 +97,11 @@
         <h3>Script Preview</h3>
         <textarea readonly rows="40" value={selectedFileContent} />
         <Button type="submit" value="Upload" backgroundColor="#0A69D9" />
+        <Button
+          type="button"
+          value="Clear"
+          backgroundColor="red"
+          on:click={() => (filesBinding = null)} />
       </div>
     {/if}
   </form>

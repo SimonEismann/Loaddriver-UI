@@ -65,7 +65,7 @@
   on:click={toggleWarmup} />
 <form on:submit|preventDefault={() => dispatch('submit', { job: job })}>
   {#if useWarmup}
-    <div transition:slide>
+    <div transition:slide={{ duration: 100 }}>
       <NumberInput
         tooltip="Duration of the warmup period in seconds. Warmup is skipped if
         set to 0."
