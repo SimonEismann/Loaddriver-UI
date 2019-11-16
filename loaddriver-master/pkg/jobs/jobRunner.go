@@ -30,6 +30,7 @@ type job struct {
 	WarmupRate     float64  `json:"warmupRate"`
 	Threads        int      `json:"threads"`
 	Timeout        int      `json:"timeout"`
+	RandomizeUsers bool     `json:"randomizeUsers"`
 }
 
 type jobQueue struct {
@@ -86,6 +87,7 @@ func NewDefaultJob(slaves []string) job {
 		WarmupRate:     0.0,
 		Threads:        128,
 		Timeout:        0,
+		RandomizeUsers: false,
 	}
 }
 
@@ -357,6 +359,9 @@ func (jq *jobRunner) generateCommand(forJob job, resultsFile string, logFile *os
 		"--wr", fmt.Sprintf("%f", forJob.WarmupRate),
 		"-t", strconv.Itoa(forJob.Threads),
 		"-u", strconv.Itoa(forJob.Timeout),
+	}
+	if forJob.RandomizeUsers {
+		commandArgs = append(commandArgs, "--randomize-users")
 	}
 	for _, slave := range forJob.Slaves {
 		commandArgs = append(commandArgs, fmt.Sprintf("-s %s", slave))
