@@ -42,9 +42,11 @@ func main() {
 	r.HandleFunc("/scripts", handleGetAllScriptNames).Queries("names-only", "true").Methods(http.MethodGet)
 	r.HandleFunc("/scripts", handleGetAllScripts).Methods(http.MethodGet)
 	r.HandleFunc("/scripts", handlePostScript).Methods(http.MethodPost)
+	r.HandleFunc("/scripts/{fileName}", handleDeleteScript).Methods(http.MethodDelete)
 	r.HandleFunc("/intensities", handleGetAllIntensityFileNames).Queries("names-only", "true").Methods(http.MethodGet)
 	r.HandleFunc("/intensities", handleGetAllIntensities).Methods(http.MethodGet)
 	r.HandleFunc("/intensities", handlePostIntensity).Methods(http.MethodPost)
+	r.HandleFunc("/intensities/{fileName}", handleDeleteIntensity).Methods(http.MethodDelete)
 	r.PathPrefix("/intensities/").Handler(http.StripPrefix("/intensities/", http.FileServer(http.Dir("./intensities/"))))
 	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts/"))))
 	go hub.Run()
@@ -122,6 +124,23 @@ func handlePostScript(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("location", fmt.Sprintf("%s/%s", r.URL.Path, postedScript.Name))
 }
 
+func handleDeleteScript(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fileName := vars["fileName"]
+	var _, err = os.Stat(filepath.Join(shared.GetExecDir(), "scripts", fileName))
+	if os.IsNotExist(err) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	err = os.Remove(filepath.Join(shared.GetExecDir(), "scripts", fileName))
+	if err != nil {
+		logger.WithField("func", "handleDeleteScript").WithError(err).Error("Could not delete file")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func handleGetAllIntensityFileNames(w http.ResponseWriter, r *http.Request) {
 	files, err := ioutil.ReadDir(filepath.Join(shared.GetExecDir(), "intensities"))
 	if err != nil {
@@ -183,4 +202,21 @@ func handlePostIntensity(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("location", fmt.Sprintf("%s/%s", r.URL.Path, postedIntensity.Name))
+}
+
+func handleDeleteIntensity(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fileName := vars["fileName"]
+	var _, err = os.Stat(filepath.Join(shared.GetExecDir(), "intensities", fileName))
+	if os.IsNotExist(err) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	err = os.Remove(filepath.Join(shared.GetExecDir(), "intensities", fileName))
+	if err != nil {
+		logger.WithField("func", "handleDeleteIntensity").WithError(err).Error("Could not delete file")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
