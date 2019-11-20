@@ -20,7 +20,7 @@
 
   .details {
     grid-area: details;
-    padding: 0.5em 1em 0.5em 1em;
+    padding: 0.5em 30% 0.5em 30%;
     border-bottom: 1px solid var(--line-color);
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -37,11 +37,23 @@
   <div class="details">
     <span>ID:</span>
     <span>{job.id}</span>
+    <span>Warmup Duration:</span>
+    <span>{job.warmupDuration}</span>
+    <span>Warmup Pause:</span>
+    <span>{job.warmupPause}</span>
+    <span>Warmup Rate:</span>
+    <span>{job.warmupRate}</span>
+    <span>Randomize Users?:</span>
+    <span>{job.randomizeUsers ? 'yes' : 'no'}</span>
+    <span>Threads:</span>
+    <span>{job.threads}</span>
+    <span>Timeout:</span>
+    <span>{job.timeout}</span>
     <span>Number of Slaves:</span>
-    <div>{job.slaves.length}</div>
-    <span>Script used:</span>
+    <span>{job.slaves.length}</span>
+    <span>Script:</span>
     <span>{job.scriptName}</span>
-    <span>Intensity file used:</span>
+    <span>Intensity file:</span>
     <span>{job.intensityFile}</span>
   </div>
   <div class="button-group">

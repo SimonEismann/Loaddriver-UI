@@ -14,11 +14,28 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
 )
+
+const (
+	timeLayout = "02-01-2006_15:04:05"
+)
+
+// ByTimeCreated implements sort.Interface for []job based on
+// the Id field parse to time.
+type ByTimeCreated []job
+
+func (jobArr ByTimeCreated) Len() int      { return len(jobArr) }
+func (jobArr ByTimeCreated) Swap(i, j int) { jobArr[i], jobArr[j] = jobArr[j], jobArr[i] }
+func (jobArr ByTimeCreated) Less(i, j int) bool {
+	t1, _ := time.Parse(timeLayout, jobArr[i].Id)
+	t2, _ := time.Parse(timeLayout, jobArr[j].Id)
+	return t1.Before(t2)
+}
 
 type job struct {
 	Id             string   `json:"id"`
@@ -78,7 +95,7 @@ func newJobQueue() jobQueue {
 
 func NewDefaultJob(slaves []string) job {
 	return job{
-		Id:             time.Now().Format("02-01-2006_15:04:05"),
+		Id:             time.Now().Format(timeLayout),
 		Slaves:         slaves,
 		ScriptName:     "teastore_browse.lua",
 		IntensityFile:  "defaultIntensity.csv",
@@ -149,6 +166,7 @@ func (jq *jobRunner) handleGetJobsQueued(w http.ResponseWriter, req *http.Reques
 			jobs = append(jobs, v.job)
 		}
 	}
+	sort.Sort(ByTimeCreated(jobs))
 	resp, err := json.MarshalIndent(jobs, "", "\t")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -163,6 +181,7 @@ func (jq *jobRunner) handleGetJobs(w http.ResponseWriter, req *http.Request) {
 	for _, v := range jq.jobsMap {
 		jobs = append(jobs, v.job)
 	}
+	sort.Sort(ByTimeCreated(jobs))
 	resp, err := json.MarshalIndent(jobs, "", "\t")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -237,6 +256,7 @@ func (jq *jobRunner) handleGetJobsDone(w http.ResponseWriter, req *http.Request)
 			jobs = append(jobs, v.job)
 		}
 	}
+	sort.Sort(ByTimeCreated(jobs))
 	resp, err := json.MarshalIndent(jobs, "", "\t")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
