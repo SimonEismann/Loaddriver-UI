@@ -20,6 +20,7 @@
     selectedFile && selectedFileContent
       ? new IntensityData(selectedFile.name, selectedFileContent)
       : null;
+
   const fetchIntensities = async () => {
     try {
       const promise = await fetch(`${API_ROOT}/intensities`, {
@@ -102,12 +103,17 @@
         {#if preview}
           <IntensityChart data={preview.data} />
         {/if}
-        <Button type="submit" value="Upload" backgroundColor="#0A69D9" />
+        <Button
+          type="submit"
+          value="Upload"
+          backgroundColor="#0A69D9"
+          icon="fa-upload" />
         <Button
           type="button"
           value="Clear"
           backgroundColor="red"
-          on:click={() => (filesBinding = null)} />
+          on:click={() => (filesBinding = null)}
+          icon="fa-times" />
       </div>
     {/if}
   </form>
@@ -122,7 +128,9 @@
             <div slot="master">{intensityFile.fileName}</div>
             <div slot="detail">
               <div class="intensity-card">
-                <IntensityFileCard {intensityFile} />
+                <IntensityFileCard
+                  {intensityFile}
+                  on:deleted={() => fetchIntensities()} />
               </div>
             </div>
           </CollapsibleListElement>

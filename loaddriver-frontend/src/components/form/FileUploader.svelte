@@ -84,6 +84,8 @@
       <span>Select a file</span>
     </label>
     <br />
-    or drag a file into this area
+    or
+    <strong>drag a file</strong>
+    into this area
   </div>
 {/if}

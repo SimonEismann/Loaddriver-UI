@@ -47,9 +47,7 @@
       mode: "cors"
     });
     intensityFiles = await (await intensityPromise).json();
-    scriptFiles = (await (await scriptPromise).json()).map(
-      script => script.name
-    );
+    scriptFiles = await (await scriptPromise).json();
     slaves = await (await slavesPromise).json();
     job.intensityFile = intensityFiles[0];
     job.scriptName = scriptFiles[0];

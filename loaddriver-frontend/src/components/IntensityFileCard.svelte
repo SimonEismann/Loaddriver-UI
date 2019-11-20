@@ -1,9 +1,25 @@
 <script>
   import IntensityChart from "./IntensityChart.svelte";
   import FileDownloader from "./FileDownloader.svelte";
+  import Button from "./form/Button.svelte";
   import { API_ROOT } from "../env.js";
+  import { createEventDispatcher } from "svelte";
 
   export let intensityFile = null;
+
+  const dispatch = createEventDispatcher();
+
+  const deleteFile = async () => {
+    try {
+      await fetch(`${API_ROOT}/intensities/${intensityFile.fileName}`, {
+        method: "DELETE",
+        mode: "cors"
+      });
+      dispatch("deleted");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 </script>
 
 <style>
@@ -21,16 +37,9 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .download {
-    padding: 0.2em 1em 0.2em 1em;
-    text-align: center;
-    vertical-align: middle;
-    cursor: pointer;
-  }
-
-  .download:hover {
-    background: gray;
-    color: white;
+  .buttons {
+    padding: 0.5em 1em;
+    text-align: end;
   }
 </style>
 
@@ -38,9 +47,16 @@
   <div class="details">
     <IntensityChart data={intensityFile.data} />
   </div>
-  <FileDownloader
-    fileName={`${intensityFile.fileName}.csv`}
-    url={`${API_ROOT}/intensities/${intensityFile.fileName}`}>
-    <div class="download">Download</div>
-  </FileDownloader>
+  <div class="buttons">
+    <FileDownloader
+      fileName={`${intensityFile.fileName}`}
+      url={`${API_ROOT}/intensities/${intensityFile.fileName}`}>
+      <Button backgroundColor="#0A69D9" value="Download" icon="fa-download" />
+    </FileDownloader>
+    <Button
+      backgroundColor="red"
+      value="Delete"
+      icon="fa-trash"
+      on:click={deleteFile} />
+  </div>
 </div>

@@ -22,7 +22,6 @@
 
 <style>
   .button-group {
-    margin: auto;
     margin-top: 0.2em;
     height: 10%;
   }
