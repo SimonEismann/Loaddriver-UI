@@ -3,12 +3,21 @@
 </script>
 
 <style>
-  .logo a {
+  a {
+    display: inline-block;
+    vertical-align: middle;
     text-decoration: none;
     color: inherit;
-    padding-bottom: 0;
-    margin-bottom: 0;
-    margin-right: 1em;
+    margin: 0 0.5em;
+    font-size: 1.6em;
+    height: 100%;
+  }
+
+  a:before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
   }
 
   .container {
@@ -19,15 +28,12 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding-left: 1em;
   }
 </style>
 
 <div class="container">
-  <div class="logo">
-    <h1>
-      <a href="/">LoadDriver-UI</a>
-    </h1>
-  </div>
+  <a href="/">
+    <strong>LoadDriver-UI</strong>
+  </a>
   <HeaderNavBar />
 </div>

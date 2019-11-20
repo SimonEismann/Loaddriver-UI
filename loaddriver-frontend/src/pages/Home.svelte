@@ -35,14 +35,14 @@
     margin-bottom: 1em;
   }
 
-  h3 {
+  h2 {
     margin: 0.5em 0;
   }
 </style>
 
 <Panel title="Welcome">
   <div class="info">
-    <h3>HTTP Load Generator</h3>
+    <h2>HTTP Load Generator</h2>
     <p>
       This application uses the
       <a href="https://github.com/joakimkistowski/HTTP-Load-Generator">
@@ -75,7 +75,7 @@
       that everything can be done solely through this WebUI.
     </p>
 
-    <h3>Features and Application Scenarios</h3>
+    <h2>Features and Application Scenarios</h2>
     <p>The load generator has the following three primary features:</p>
     <ol>
       <li>
@@ -98,7 +98,7 @@
       seasonal variations in request patterns, trends, etc.
     </p>
 
-    <h3>Cite Us</h3>
+    <h2>Cite Us</h2>
     <p>
       Please consider citing us if you use the HTTP Load Generator in your work:
     </p>

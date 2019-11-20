@@ -48,6 +48,18 @@
       console.log(error);
     }
   };
+
+  const deleteScript = async name => {
+    try {
+      await fetch(`${API_ROOT}/scripts/${name}`, {
+        method: "DELETE",
+        mode: "cors"
+      });
+      fetchScripts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 </script>
 
 <style>
@@ -78,6 +90,11 @@
   li:last-child {
     border-bottom: none;
   }
+
+  .buttons {
+    padding: 0 1em 0.5em 1em;
+    text-align: end;
+  }
 </style>
 
 <Panel
@@ -94,7 +111,7 @@
     </div>
     {#if selectedFile}
       <div transition:slide>
-        <h3>Script Preview</h3>
+        <h2>Script Preview</h2>
         <textarea readonly rows="40" value={selectedFileContent} />
         <Button type="submit" value="Upload" backgroundColor="#0A69D9" />
         <Button
@@ -116,7 +133,16 @@
         <li>
           <CollapsibleListElement>
             <div slot="master">{script.name}</div>
-            <textarea slot="detail" readonly rows="40" value={script.content} />
+            <div slot="detail">
+              <textarea readonly rows="40" value={script.content} />
+              <div class="buttons">
+                <Button
+                  backgroundColor="red"
+                  value="Delete"
+                  icon="fa-trash"
+                  on:click={() => deleteScript(script.name)} />
+              </div>
+            </div>
           </CollapsibleListElement>
         </li>
       {/each}

@@ -42,13 +42,13 @@
   download the log file as well as the results file from a particular job.">
 
   {#if jobs.length === 0}
-      <p style="text-align: center;">No jobs have been run yet</p>
+    <p style="text-align: center;">No jobs have been run yet</p>
   {:else}
     <ul>
-      {#each jobs as job}
+      {#each jobs as job, i}
         <li>
           <CollapsibleListElement>
-            <div slot="master">{job.id}</div>
+            <div slot="master">Job #{i}: {job.id}</div>
             <div slot="detail">
               <JobCard {job} />
             </div>

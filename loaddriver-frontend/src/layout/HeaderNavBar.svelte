@@ -13,6 +13,9 @@
 <style>
   nav {
     height: 100%;
+    display:flex;
+    justify-content: start;
+    align-items: center;
   }
 
   nav :global(.nav-link) {
@@ -20,8 +23,8 @@
     display: inline-block;
     font-size: 1.1em;
     text-decoration: none;
-    height: 100%;
     color: inherit;
+    height: 100%;
     vertical-align: middle;
   }
 

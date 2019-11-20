@@ -33,8 +33,6 @@
     height: 80%;
     padding: 0.5em 1em 0.5em 1em;
     border-bottom: 1px solid var(--line-color);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
   }
 
   .buttons {

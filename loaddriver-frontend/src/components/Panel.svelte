@@ -27,7 +27,7 @@
 
 <div class="container" {style}>
   <div class="header">
-    <h2>{title}</h2>
+    <h1>{title}</h1>
     <p class="subtitle">{subtitle}</p>
   </div>
   <div class="body">

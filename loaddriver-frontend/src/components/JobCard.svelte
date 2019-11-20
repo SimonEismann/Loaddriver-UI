@@ -1,5 +1,6 @@
 <script>
   import FileDownloader from "./FileDownloader.svelte";
+  import Button from "./form/Button.svelte";
   import { API_ROOT } from "../env.js";
 
   export let job = null;
@@ -25,23 +26,10 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .log {
-    grid-area: log;
-    border-right: 1px solid var(--line-color);
-    padding: 0.2em 1em 0.2em 1em;
-    cursor: pointer;
-  }
-
-  .log:hover,
-  .results:hover {
-    background: gray;
-    color: white;
-  }
-
-  .results {
-    grid-area: results;
-    padding: 0.2em 1em 0.2em 1em;
-    cursor: pointer;
+  .button-group {
+    grid-column: 2;
+    padding: 0.5em 1em;
+    text-align: end;
   }
 </style>
 
@@ -56,14 +44,22 @@
     <span>Intensity file used:</span>
     <span>{job.intensityFile}</span>
   </div>
-  <FileDownloader
-    fileName={`${job.id}.log`}
-    url={`${API_ROOT}/jobs/${job.id}/log`}>
-    <div class="log">Download log file</div>
-  </FileDownloader>
-  <FileDownloader
-    fileName={`${job.id}.csv`}
-    url={`${API_ROOT}/jobs/${job.id}/result`}>
-    <div class="results">Download results file</div>
-  </FileDownloader>
+  <div class="button-group">
+    <FileDownloader
+      fileName={`${job.id}.log`}
+      url={`${API_ROOT}/jobs/${job.id}/log`}>
+      <Button
+        backgroundColor="#0A69D9"
+        value="Download logs"
+        icon="fa-file-alt" />
+    </FileDownloader>
+    <FileDownloader
+      fileName={`${job.id}.csv`}
+      url={`${API_ROOT}/jobs/${job.id}/result`}>
+      <Button
+        backgroundColor="#1E6C41"
+        value="Download results"
+        icon="fa-file-csv" />
+    </FileDownloader>
+  </div>
 </div>

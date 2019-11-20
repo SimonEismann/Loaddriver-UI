@@ -86,8 +86,8 @@
 </style>
 
 <Panel
-  title="Upload Intensity"
-  subtitle="Upload new Intensity file to make it available for experiments"
+  title="Upload Intensity file"
+  subtitle="Upload Intensity file to make it available for experiments"
   style="margin-bottom: 1em;">
   <form on:submit|preventDefault={upload}>
     <div class="file-uploader">
@@ -99,7 +99,7 @@
     </div>
     {#if selectedFile}
       <div class="script-preview" transition:slide>
-        <h3>Intensity Preview</h3>
+        <h2>Intensity Preview</h2>
         {#if preview}
           <IntensityChart data={preview.data} />
         {/if}
@@ -119,7 +119,9 @@
   </form>
 </Panel>
 
-<Panel title="Available Intensities" subtitle="Currently available Intensities">
+<Panel
+  title="Available Intensity files"
+  subtitle="Currently available Intensity files usable for experiments">
   {#if intensityFiles && intensityFiles.length != 0}
     <ul>
       {#each intensityFiles as intensityFile}
@@ -127,17 +129,15 @@
           <CollapsibleListElement>
             <div slot="master">{intensityFile.fileName}</div>
             <div slot="detail">
-              <div class="intensity-card">
-                <IntensityFileCard
-                  {intensityFile}
-                  on:deleted={() => fetchIntensities()} />
-              </div>
+              <IntensityFileCard
+                {intensityFile}
+                on:deleted={() => fetchIntensities()} />
             </div>
           </CollapsibleListElement>
         </li>
       {/each}
     </ul>
   {:else}
-    <p style="text-align: center;">No Intensities currently available</p>
+    <p style="text-align: center;">No Intensity files currently available</p>
   {/if}
 </Panel>
