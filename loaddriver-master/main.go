@@ -68,9 +68,9 @@ func handleGetAllScriptNames(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var result []filePayload
+	result := make([]string, 0)
 	for _, file := range files {
-		result = append(result, filePayload{Name: file.Name()})
+		result = append(result, file.Name())
 	}
 	resp, err := json.MarshalIndent(result, "", "\t")
 	if err != nil {
@@ -147,7 +147,7 @@ func handleGetAllIntensityFileNames(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var result []string
+	result := make([]string, 0)
 	for _, file := range files {
 		result = append(result, file.Name())
 	}
