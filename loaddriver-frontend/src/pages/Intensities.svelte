@@ -3,6 +3,10 @@
   import IntensityChart from "../components/IntensityChart.svelte";
   import FileUploader from "../components/form/FileUploader.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
+  import IntensityTypeSelector from "../pages/intensity-wizard/IntensityTypeSelector.svelte";
+  import ConstantIntensityWizard from "../pages/intensity-wizard/ConstantIntensityWizard.svelte";
+  import LinearIntensityWizard from "../pages/intensity-wizard/LinearIntensityWizard.svelte";
+  import SineIntensityWizard from "../pages/intensity-wizard/SineIntensityWizard.svelte";
   import Button from "../components/form/Button.svelte";
   import Panel from "../components/Panel.svelte";
   import TextFile from "../model/text-file.js";
@@ -10,6 +14,7 @@
   import { API_ROOT } from "../env.js";
   import { slide } from "svelte/transition";
   import { onMount } from "svelte";
+  import { Router, Route } from "svelte-routing";
 
   let intensityFiles = [];
 
@@ -117,6 +122,26 @@
       </div>
     {/if}
   </form>
+</Panel>
+
+<Panel
+  title="Generate new basic Intensity file"
+  subtitle="Here you can configure one of the basic functions to generate a new
+  Intensity file">
+  <Router basepath="/intensities/">
+    <Route path="/">
+      <IntensityTypeSelector />
+    </Route>
+    <Route path="create/constant">
+      <ConstantIntensityWizard />
+    </Route>
+    <Route path="create/linear">
+      <LinearIntensityWizard />
+    </Route>
+    <Route path="create/sine">
+      <SineIntensityWizard />
+    </Route>
+  </Router>
 </Panel>
 
 <Panel

@@ -88,7 +88,7 @@
             </td>
           </tr>
         {/each}
-      {:else}No slaves regististered{/if}
+      {:else}No slaves registered{/if}
     </tbody>
   </table>
 </Panel>

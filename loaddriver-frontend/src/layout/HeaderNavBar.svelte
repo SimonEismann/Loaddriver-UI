@@ -47,7 +47,6 @@
 </style>
 
 <nav>
-  <Link to="dashboard" getProps={getLinkProps}>Dashboard</Link>
   <Link to="run-job" getProps={getLinkProps}>Run Job</Link>
   <Link to="history" getProps={getLinkProps}>History</Link>
   <Link to="intensities" getProps={getLinkProps}>Intensities</Link>

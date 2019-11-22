@@ -13,11 +13,11 @@
 </style>
 
 <div style="margin-bottom: 0.5em;">
-  <label for="warmupCheck">
+  <label for={aria}>
+    <input id={aria} type="checkbox" bind:checked={value} on:click />
     {label}
     {#if tooltip}
       <Tooltip text={tooltip} />
     {/if}
-    <input type="checkbox" bind:checked={value} on:click />
   </label>
 </div>
