@@ -3,19 +3,18 @@
   import IntensityChart from "../components/IntensityChart.svelte";
   import FileUploader from "../components/form/FileUploader.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
-  import IntensityTypeSelector from "../pages/intensity-wizard/IntensityTypeSelector.svelte";
-  import ConstantIntensityWizard from "../pages/intensity-wizard/ConstantIntensityWizard.svelte";
-  import LinearIntensityWizard from "../pages/intensity-wizard/LinearIntensityWizard.svelte";
-  import SineIntensityWizard from "../pages/intensity-wizard/SineIntensityWizard.svelte";
+  import IntensityTypeSelector from "./intensity-wizard/IntensityTypeSelector.svelte";
+  import ConstantIntensityWizard from "./intensity-wizard/ConstantIntensityWizard.svelte";
+  import LinearIntensityWizard from "./intensity-wizard/LinearIntensityWizard.svelte";
+  import SineIntensityWizard from "./intensity-wizard/SineIntensityWizard.svelte";
   import Button from "../components/form/Button.svelte";
   import Panel from "../components/Panel.svelte";
-  import TextFile from "../model/text-file.js";
   import IntensityData from "../model/intensity-data.js";
   import { API_ROOT } from "../env.js";
+  import { uploadIntensityFile } from "../model/api.js";
   import { slide } from "svelte/transition";
   import { onMount } from "svelte";
-  import { Router, Route } from "svelte-routing";
-
+  import { Router, Route, Link } from "svelte-routing";
   let intensityFiles = [];
 
   let filesBinding = null;
@@ -44,26 +43,17 @@
     }
   };
 
-  onMount(fetchIntensities);
-
   const upload = async () => {
     try {
-      await fetch(`${API_ROOT}/intensities`, {
-        body: JSON.stringify(
-          new TextFile(selectedFile.name, selectedFileContent)
-        ),
-        headers: {
-          "Content-type": "application/json"
-        },
-        method: "POST",
-        mode: "cors"
-      });
+      await uploadIntensityFile(selectedFile.name, selectedFileContent);
       fetchIntensities();
       filesBinding = null;
     } catch (error) {
       console.log(error);
     }
   };
+
+  onMount(fetchIntensities);
 </script>
 
 <style>
@@ -94,7 +84,7 @@
   title="Upload Intensity file"
   subtitle="Upload Intensity file to make it available for experiments"
   style="margin-bottom: 1em;">
-  <form on:submit|preventDefault={upload}>
+  <form on:submit|preventDefault={() => upload()}>
     <div class="file-uploader">
       <FileUploader
         accept=".csv"
@@ -111,7 +101,7 @@
         <Button
           type="submit"
           value="Upload"
-          backgroundColor="#0A69D9"
+          backgroundColor="var(--primary-action-color)"
           icon="fa-upload" />
         <Button
           type="button"
@@ -128,20 +118,7 @@
   title="Generate new basic Intensity file"
   subtitle="Here you can configure one of the basic functions to generate a new
   Intensity file">
-  <Router basepath="/intensities/">
-    <Route path="/">
-      <IntensityTypeSelector />
-    </Route>
-    <Route path="create/constant">
-      <ConstantIntensityWizard />
-    </Route>
-    <Route path="create/linear">
-      <LinearIntensityWizard />
-    </Route>
-    <Route path="create/sine">
-      <SineIntensityWizard />
-    </Route>
-  </Router>
+  <IntensityTypeSelector />
 </Panel>
 
 <Panel

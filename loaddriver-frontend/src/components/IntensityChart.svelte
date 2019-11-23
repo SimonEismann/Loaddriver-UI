@@ -6,51 +6,55 @@
   let chart;
 
   const updateChart = () => {
-    if (chart) chart.destroy();
-    chart = new Chart(ctx, {
-      type: "line",
-      data: {
-        datasets: [
-          {
-            label: "Intensity",
-            data: data,
-            borderWidth: 1,
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            fill: false,
-            pointRadius: 0,
-            borderWidth: 2
-          }
-        ]
-      },
-      options: {
-        scales: {
-          yAxes: [
+    if (chart) {
+      chart.data.datasets[0].data = data;
+      chart.update();
+    } else {
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          datasets: [
             {
-              scaleLabel: {
-                display: true,
-                labelString: "Requests/second"
-              }
-            }
-          ],
-          xAxes: [
-            {
-              type: "linear",
-              scaleLabel: {
-                display: true,
-                labelString: "Seconds"
-              }
+              label: "Intensity",
+              data: data,
+              borderWidth: 1,
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              fill: false,
+              pointRadius: 0,
+              borderWidth: 2
             }
           ]
         },
-        legend: {
-          display: false
-        },
-        tooltips: {
-          enabled: false
+        options: {
+          scales: {
+            yAxes: [
+              {
+                scaleLabel: {
+                  display: true,
+                  labelString: "Requests/second"
+                }
+              }
+            ],
+            xAxes: [
+              {
+                type: "linear",
+                scaleLabel: {
+                  display: true,
+                  labelString: "Seconds"
+                }
+              }
+            ]
+          },
+          legend: {
+            display: false
+          },
+          tooltips: {
+            enabled: false
+          }
         }
-      }
-    });
+      });
+    }
   };
 
   afterUpdate(() => {

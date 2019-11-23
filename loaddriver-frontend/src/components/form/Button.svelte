@@ -4,6 +4,7 @@
   export let type = "button";
   export let color = "white";
   export let size = "inherit";
+  export let title = "";
   export let icon = null;
 </script>
 
@@ -21,6 +22,7 @@
 </style>
 
 <button
+  {title}
   on:click
   {type}
   style="background-color: {backgroundColor}; color: {color}; font-size: {size}">

@@ -33,11 +33,11 @@
 <Modal />
 <Router {url}>
   <div class="main-container">
-    <div id="header">
+    <header id="header">
       <Header />
-    </div>
-    <div id="main_content">
+    </header>
+    <main id="main_content">
       <Main />
-    </div>
+    </main>
   </div>
 </Router>

@@ -49,7 +49,10 @@
     <FileDownloader
       fileName={`${intensityFile.fileName}`}
       url={`${API_ROOT}/intensities/${intensityFile.fileName}`}>
-      <Button backgroundColor="#0A69D9" value="Download" icon="fa-download" />
+      <Button
+        backgroundColor="var(--primary-action-color)"
+        value="Download"
+        icon="fa-download" />
     </FileDownloader>
     <Button
       backgroundColor="red"

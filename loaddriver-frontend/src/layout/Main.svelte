@@ -7,6 +7,9 @@
   import Scripts from "../pages/Scripts.svelte";
   import Page from "../components/Page.svelte";
   import Intensities from "../pages/Intensities.svelte";
+  import ConstantIntensityWizard from "../pages/intensity-wizard/ConstantIntensityWizard.svelte";
+  import LinearIntensityWizard from "../pages/intensity-wizard/LinearIntensityWizard.svelte";
+  import SineIntensityWizard from "../pages/intensity-wizard/SineIntensityWizard.svelte";
   import { Route } from "svelte-routing";
 </script>
 
@@ -25,9 +28,24 @@
     <SlaveList />
   </Page>
 </Route>
-<Route path="intensities/*">
+<Route path="intensities">
   <Page>
     <Intensities />
+  </Page>
+</Route>
+<Route path="intensities/create/constant">
+  <Page>
+    <ConstantIntensityWizard />
+  </Page>
+</Route>
+<Route path="intensities/create/linear">
+  <Page>
+    <LinearIntensityWizard />
+  </Page>
+</Route>
+<Route path="intensities/create/sine">
+  <Page>
+    <SineIntensityWizard />
   </Page>
 </Route>
 <Route path="scripts">

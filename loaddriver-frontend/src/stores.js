@@ -1,4 +1,4 @@
-import { writable, readable } from "svelte/store";
+import { writable } from "svelte/store";
 
 const createModalState = () => {
   const initialState = { Component: null, props: null };

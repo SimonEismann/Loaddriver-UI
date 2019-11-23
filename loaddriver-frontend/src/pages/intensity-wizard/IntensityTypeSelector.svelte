@@ -1,7 +1,7 @@
 <script>
   import IntensityChart from "../../components/IntensityChart.svelte";
   import IntensityData, { Point2D } from "../../model/intensity-data.js";
-  import { link } from "svelte-routing";
+  import { links } from "svelte-routing";
 
   const constantPreviewData = [
     new Point2D(0.0, 1.0),
@@ -46,24 +46,34 @@
 
   .function-card {
     text-align: center;
+    border: 1px solid var(--line-color);
+    border-radius: 2px;
+    padding: 1em;
+    transition: transform 0.1s ease-out;
+    transform: perspective(500px) translateZ(0px);
+  }
+
+  .function-card:hover {
+    box-shadow: var(--shadow);
+    transform: perspective(500px) translateZ(30px);
   }
 </style>
 
 <h2>Choose base function</h2>
-<div class="function-grid">
-  <a href="intensities/create/constant" use:link>
+<div class="function-grid" use:links>
+  <a href="intensities/create/constant">
     <div class="function-card">
       <h3>Constant</h3>
       <IntensityChart data={constantPreviewData} />
     </div>
   </a>
-  <a href="intensities/create/linear" use:link>
+  <a href="intensities/create/linear">
     <div class="function-card">
       <h3>Linear</h3>
       <IntensityChart data={linearPreviewData} />
     </div>
   </a>
-  <a href="intensities/create/sine" use:link>
+  <a href="intensities/create/sine">
     <div class="function-card">
       <h3>Sine</h3>
       <IntensityChart data={sinePreviewData} />
