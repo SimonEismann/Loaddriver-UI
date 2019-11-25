@@ -3,27 +3,23 @@
   import IntensityData, { Point2D } from "../../model/intensity-data.js";
   import { links } from "svelte-routing";
 
-  const constantPreviewData = [
-    new Point2D(0.0, 1.0),
-    new Point2D(1.0, 1.0),
-    new Point2D(2.0, 1.0),
-    new Point2D(3.0, 1.0),
-    new Point2D(4.0, 1.0)
-  ];
+  const constantPreviewData = [new Point2D(0.0, 1.0), new Point2D(4.0, 1.0)];
 
-  const linearPreviewData = [
-    new Point2D(0.0, 0.0),
-    new Point2D(1.0, 0.25),
-    new Point2D(2.0, 0.5),
-    new Point2D(3.0, 0.75),
-    new Point2D(4.0, 1.0)
-  ];
+  const linearPreviewData = [new Point2D(0.0, 0.0), new Point2D(4.0, 1.0)];
 
   const sinePreviewData = [];
-  const doublePI = 2 * Math.PI;
-  for (let i = 0.0; i < doublePI; i = i + doublePI / 360.0) {
-    sinePreviewData.push(new Point2D(i, Math.sin(i)));
+  const stretch = 4 / (2.0 * Math.PI);
+  for (let i = 0.0; i <= 4; i = i + 0.25) {
+    sinePreviewData.push(new Point2D(i, Math.sin(i / stretch)));
   }
+
+  const peakPreviewData = [
+    new Point2D(0.0, 0.0),
+    new Point2D(1.0, 0.5),
+    new Point2D(2.0, 1.0),
+    new Point2D(3.0, 0.5),
+    new Point2D(4.0, 0.0)
+  ];
 </script>
 
 <style>
@@ -73,10 +69,16 @@
       <IntensityChart data={linearPreviewData} />
     </div>
   </a>
-  <a href="intensities/create/sine">
+  <a href="intensities/create/periodic">
     <div class="function-card">
-      <h3>Sine</h3>
+      <h3>Periodic</h3>
       <IntensityChart data={sinePreviewData} />
+    </div>
+  </a>
+  <a href="intensities/create/peak">
+    <div class="function-card">
+      <h3>Peak</h3>
+      <IntensityChart data={peakPreviewData} curved={false} />
     </div>
   </a>
 </div>

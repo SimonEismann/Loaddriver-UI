@@ -9,7 +9,8 @@
   import Intensities from "../pages/Intensities.svelte";
   import ConstantIntensityWizard from "../pages/intensity-wizard/ConstantIntensityWizard.svelte";
   import LinearIntensityWizard from "../pages/intensity-wizard/LinearIntensityWizard.svelte";
-  import SineIntensityWizard from "../pages/intensity-wizard/SineIntensityWizard.svelte";
+  import PeriodicIntensityWizard from "../pages/intensity-wizard/PeriodicIntensityWizard.svelte";
+  import PeakIntensityWizard from "../pages/intensity-wizard/PeakIntensityWizard.svelte";
   import { Route } from "svelte-routing";
 </script>
 
@@ -43,9 +44,14 @@
     <LinearIntensityWizard />
   </Page>
 </Route>
-<Route path="intensities/create/sine">
+<Route path="intensities/create/periodic">
   <Page>
-    <SineIntensityWizard />
+    <PeriodicIntensityWizard />
+  </Page>
+</Route>
+<Route path="intensities/create/peak">
+  <Page>
+    <PeakIntensityWizard />
   </Page>
 </Route>
 <Route path="scripts">

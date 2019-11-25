@@ -2,6 +2,7 @@
   import Chart from "chart.js";
   import { afterUpdate } from "svelte";
   export let data;
+  export let curved = true;
   let ctx;
   let chart;
 
@@ -22,7 +23,8 @@
               borderColor: "rgba(255, 99, 132, 1)",
               fill: false,
               pointRadius: 0,
-              borderWidth: 2
+              borderWidth: 2,
+              lineTension: curved ? 0.4 : 0
             }
           ]
         },

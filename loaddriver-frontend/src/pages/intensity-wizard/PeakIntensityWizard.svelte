@@ -9,14 +9,25 @@
   import { Point2D } from "../../model/intensity-data.js";
   import { navigate } from "svelte-routing";
   let duration = 60;
-  let intensity = 10;
+  let min = 0;
+  let peak = 10;
+  let numOfPeaks = 1;
   let filename = "";
   let previewData = [];
 
   $: {
     previewData = [];
-    for (let i = 0; i < duration; i++) {
-      previewData.push(new Point2D(i, intensity));
+    const stepSize = duration / (numOfPeaks * 2.0);
+    let m = (peak - min) / stepSize;
+    let previous = min;
+    previewData.push(new Point2D(0, min));
+    for (let i = 1; i <= duration; i++) {
+      let next = previous + m;
+      previewData.push(new Point2D(i, next < 0 ? 0 : next));
+      previous = next < 0 ? 0 : next;
+      if (i % stepSize == 0) {
+        m *= -1.0;
+      }
     }
   }
 
@@ -34,7 +45,7 @@
 </script>
 
 <Panel
-  title="Constant Intensity Wizard"
+  title="Peak Intensity Wizard"
   subtitle="Configure the intensity file and upload it directly to the server to
   make it available for experiments">
   <form on:submit|preventDefault={upload}>
@@ -43,9 +54,11 @@
       bind:value={filename}
       required="true" />
     <NumberInput label="Duration" bind:value={duration} />
-    <NumberInput label="Intensity" bind:value={intensity} />
+    <NumberInput label="Minimum Intensity" bind:value={min} />
+    <NumberInput label="Peak Intensity" bind:value={peak} />
+    <NumberInput label="Number of Peaks" bind:value={numOfPeaks} />
     <h2 style="margin-bottom: 1em; margin-top: 1em">Preview</h2>
-    <IntensityChart data={previewData} />
+    <IntensityChart data={previewData} curved={false} />
     <Button
       backgroundColor="var(--primary-action-color)"
       type="submit"
@@ -60,4 +73,5 @@
         title="Cancel and return to type selection" />
     </Link>
   </form>
+
 </Panel>

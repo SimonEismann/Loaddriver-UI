@@ -17,7 +17,7 @@
   $: gradient = (peakIntensity - startIntensity) / duration;
   $: {
     previewData = [];
-    for (let i = 0; i < duration; i++) {
+    for (let i = 0; i <= duration; i++) {
       previewData.push(new Point2D(i, i * gradient + startIntensity));
     }
   }

@@ -4,9 +4,6 @@
   import FileUploader from "../components/form/FileUploader.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
   import IntensityTypeSelector from "./intensity-wizard/IntensityTypeSelector.svelte";
-  import ConstantIntensityWizard from "./intensity-wizard/ConstantIntensityWizard.svelte";
-  import LinearIntensityWizard from "./intensity-wizard/LinearIntensityWizard.svelte";
-  import SineIntensityWizard from "./intensity-wizard/SineIntensityWizard.svelte";
   import Button from "../components/form/Button.svelte";
   import Panel from "../components/Panel.svelte";
   import IntensityData from "../model/intensity-data.js";
