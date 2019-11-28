@@ -3,6 +3,7 @@
   import FileUploader from "../components/form/FileUploader.svelte";
   import Button from "../components/form/Button.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
+  import ScriptFileCard from "../components/ScriptFileCard.svelte";
   import TextFile from "../model/text-file.js";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
@@ -48,18 +49,6 @@
       console.log(error);
     }
   };
-
-  const deleteScript = async name => {
-    try {
-      await fetch(`${API_ROOT}/scripts/${name}`, {
-        method: "DELETE",
-        mode: "cors"
-      });
-      fetchScripts();
-    } catch (error) {
-      console.log(error);
-    }
-  };
 </script>
 
 <style>
@@ -89,11 +78,6 @@
 
   li:last-child {
     border-bottom: none;
-  }
-
-  .buttons {
-    padding: 0 1em 0.5em 1em;
-    text-align: end;
   }
 </style>
 
@@ -134,14 +118,7 @@
           <CollapsibleListElement>
             <div slot="master">{script.name}</div>
             <div slot="detail">
-              <textarea readonly rows="40" value={script.content} />
-              <div class="buttons">
-                <Button
-                  backgroundColor="red"
-                  value="Delete"
-                  icon="fa-trash"
-                  on:click={() => deleteScript(script.name)} />
-              </div>
+              <ScriptFileCard scriptFile={script} />
             </div>
           </CollapsibleListElement>
         </li>

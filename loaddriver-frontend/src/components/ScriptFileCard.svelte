@@ -5,17 +5,17 @@
   import { API_ROOT } from "../env.js";
   import { createEventDispatcher } from "svelte";
 
-  export let intensityFile = null;
+  export let scriptFile = null;
 
   const dispatch = createEventDispatcher();
 
-  const deleteFile = async () => {
+  const deleteScript = async name => {
     try {
-      await fetch(`${API_ROOT}/intensities/${intensityFile.fileName}`, {
+      await fetch(`${API_ROOT}/scripts/${name}`, {
         method: "DELETE",
         mode: "cors"
       });
-      dispatch("deleted");
+      fetchScripts();
     } catch (error) {
       console.log(error);
     }
@@ -29,9 +29,16 @@
     background-color: white;
   }
 
+  textarea {
+    margin: 0.5em 0;
+    width: 100%;
+    resize: none;
+  }
+
   .details {
+    width: 100%;
     height: 80%;
-    padding: 0.5em 1em;
+    padding: 0.5em 1em 0.5em 1em;
     border-bottom: 1px solid var(--line-color);
   }
 
@@ -43,12 +50,12 @@
 
 <div class="container">
   <div class="details">
-    <LineChart data={intensityFile.data} />
+    <textarea readonly rows="40" value={scriptFile.content} />
   </div>
   <div class="buttons">
     <FileDownloader
-      fileName={`${intensityFile.fileName}`}
-      url={`${API_ROOT}/intensities/${intensityFile.fileName}`}>
+      fileName={`${scriptFile.fileName}`}
+      url={`${API_ROOT}/scripts/${scriptFile.fileName}`}>
       <Button
         backgroundColor="var(--primary-action-color)"
         value="Download"
@@ -58,6 +65,6 @@
       backgroundColor="red"
       value="Delete"
       icon="fa-trash"
-      on:click={deleteFile} />
+      on:click={() => deleteScript(scriptFile.name)} />
   </div>
 </div>
