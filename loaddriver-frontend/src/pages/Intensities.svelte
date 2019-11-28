@@ -1,6 +1,6 @@
 <script>
   import IntensityFileCard from "../components/IntensityFileCard.svelte";
-  import IntensityChart from "../components/IntensityChart.svelte";
+  import LineChart from "../components/LineChart.svelte";
   import FileUploader from "../components/form/FileUploader.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
   import IntensityTypeSelector from "./intensity-wizard/IntensityTypeSelector.svelte";
@@ -93,7 +93,7 @@
       <div class="script-preview" transition:slide>
         <h2>Intensity Preview</h2>
         {#if preview}
-          <IntensityChart data={preview.data} />
+          <LineChart data={preview.data} />
         {/if}
         <Button
           type="submit"

@@ -2,7 +2,7 @@
   import Panel from "../../components/Panel.svelte";
   import NumberInput from "../../components/form/NumberInput.svelte";
   import TextInput from "../../components/form/TextInput.svelte";
-  import IntensityChart from "../../components/IntensityChart.svelte";
+  import LineChart from "../../components/LineChart.svelte";
   import Button from "../../components/form/Button.svelte";
   import { uploadIntensityFile } from "../../model/api.js";
   import { Link } from "svelte-routing";
@@ -58,7 +58,7 @@
     <NumberInput label="Peak Intensity" bind:value={peak} />
     <NumberInput label="Number of Peaks" bind:value={numOfPeaks} />
     <h2 style="margin-bottom: 1em; margin-top: 1em">Preview</h2>
-    <IntensityChart data={previewData} curved={false} />
+    <LineChart data={previewData} curved={false} />
     <Button
       backgroundColor="var(--primary-action-color)"
       type="submit"

@@ -1,5 +1,5 @@
 <script>
-  import IntensityChart from "./IntensityChart.svelte";
+  import LineChart from "./LineChart.svelte";
   import FileDownloader from "./FileDownloader.svelte";
   import Button from "./form/Button.svelte";
   import { API_ROOT } from "../env.js";
@@ -43,7 +43,7 @@
 
 <div class="container">
   <div class="details">
-    <IntensityChart data={intensityFile.data} />
+    <LineChart data={intensityFile.data} />
   </div>
   <div class="buttons">
     <FileDownloader

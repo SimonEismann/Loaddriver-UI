@@ -1,5 +1,5 @@
 <script>
-  import IntensityChart from "../../components/IntensityChart.svelte";
+  import LineChart from "../../components/LineChart.svelte";
   import IntensityData, { Point2D } from "../../model/intensity-data.js";
   import { links } from "svelte-routing";
 
@@ -60,25 +60,25 @@
   <a href="intensities/create/constant">
     <div class="function-card">
       <h3>Constant</h3>
-      <IntensityChart data={constantPreviewData} />
+      <LineChart data={constantPreviewData} />
     </div>
   </a>
   <a href="intensities/create/linear">
     <div class="function-card">
       <h3>Linear</h3>
-      <IntensityChart data={linearPreviewData} />
+      <LineChart data={linearPreviewData} />
     </div>
   </a>
   <a href="intensities/create/periodic">
     <div class="function-card">
       <h3>Periodic</h3>
-      <IntensityChart data={sinePreviewData} />
+      <LineChart data={sinePreviewData} />
     </div>
   </a>
   <a href="intensities/create/peak">
     <div class="function-card">
       <h3>Peak</h3>
-      <IntensityChart data={peakPreviewData} curved={false} />
+      <LineChart data={peakPreviewData} curved={false} />
     </div>
   </a>
 </div>
