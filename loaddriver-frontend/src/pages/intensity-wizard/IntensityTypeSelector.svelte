@@ -55,7 +55,6 @@
   }
 </style>
 
-<h2>Choose base function</h2>
 <div class="function-grid" use:links>
   <a href="intensities/create/constant">
     <div class="function-card">

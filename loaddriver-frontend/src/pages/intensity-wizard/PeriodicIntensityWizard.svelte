@@ -22,7 +22,9 @@
       previewData.push(
         new Point2D(
           i,
-          amplitude - min + amplitude * -Math.cos((i / stretch) * numOfPeriods)
+          amplitude / 2 +
+            min +
+            (amplitude / 2) * -Math.cos((i / stretch) * numOfPeriods)
         )
       );
     }
@@ -52,8 +54,14 @@
       required="true" />
     <NumberInput label="Duration" bind:value={duration} />
     <NumberInput label="Number of periods" bind:value={numOfPeriods} />
-    <NumberInput label="Amplitude" bind:value={amplitude} />
-    <NumberInput label="Minimum" bind:value={min} />
+    <NumberInput
+      label="Amplitude"
+      bind:value={amplitude}
+      tooltip="Amplitude relative to the minimum value provided" />
+    <NumberInput
+      label="Minimum"
+      bind:value={min}
+      tooltip="The minimum intensity" />
     <h2 style="margin-bottom: 1em; margin-top: 1em">Preview</h2>
     <LineChart data={previewData} />
     <Button
