@@ -1,5 +1,6 @@
 <script>
   import Panel from "../components/Panel.svelte";
+  import CodeEditor from "../components/CodeEditor.svelte";
   import FileUploader from "../components/form/FileUploader.svelte";
   import Button from "../components/form/Button.svelte";
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
@@ -58,12 +59,6 @@
     align-content: center;
   }
 
-  textarea {
-    margin: 0.5em 0;
-    width: 100%;
-    resize: none;
-  }
-
   ul {
     list-style-type: none;
     margin: 0;
@@ -82,7 +77,7 @@
 </style>
 
 <Panel
-  title="Upload Script"
+  title="Upload Script (Lua file)"
   subtitle="Upload new scripts to make it available for experiments"
   style="margin-bottom: 1em;">
   <form on:submit|preventDefault={upload}>
@@ -96,7 +91,7 @@
     {#if selectedFile}
       <div transition:slide>
         <h2>Script Preview</h2>
-        <textarea readonly rows="40" value={selectedFileContent} />
+        <CodeEditor value={selectedFileContent} readOnly={true} />
         <Button type="submit" value="Upload" backgroundColor="#0A69D9" />
         <Button
           type="button"

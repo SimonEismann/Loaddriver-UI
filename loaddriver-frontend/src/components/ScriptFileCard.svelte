@@ -1,6 +1,7 @@
 <script>
   import LineChart from "./LineChart.svelte";
   import FileDownloader from "./FileDownloader.svelte";
+  import CodeEditor from "./CodeEditor.svelte";
   import Button from "./form/Button.svelte";
   import { API_ROOT } from "../env.js";
   import { createEventDispatcher } from "svelte";
@@ -50,7 +51,7 @@
 
 <div class="container">
   <div class="details">
-    <textarea readonly rows="40" value={scriptFile.content} />
+    <CodeEditor value={scriptFile.content} readOnly={true} />
   </div>
   <div class="buttons">
     <FileDownloader
