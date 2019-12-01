@@ -47,7 +47,7 @@
 </style>
 
 <nav>
-  <Link to="run-job" getProps={getLinkProps}>Run Job</Link>
+  <Link to="run-experiment" getProps={getLinkProps}>Run Experiment</Link>
   <Link to="history" getProps={getLinkProps}>History</Link>
   <Link to="intensities" getProps={getLinkProps}>Intensities</Link>
   <Link to="scripts" getProps={getLinkProps}>Scripts</Link>

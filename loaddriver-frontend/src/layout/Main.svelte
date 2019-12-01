@@ -1,7 +1,7 @@
 <script>
   import ConsoleReader from "../components/ConsoleReader.svelte";
   import History from "../pages/History.svelte";
-  import RunJob from "../pages/RunJob.svelte";
+  import RunExperiment from "../pages/RunExperiment.svelte";
   import SlaveList from "../pages/SlaveList.svelte";
   import Home from "../pages/Home.svelte";
   import Scripts from "../pages/Scripts.svelte";
@@ -14,9 +14,9 @@
   import { Route } from "svelte-routing";
 </script>
 
-<Route path="run-job">
+<Route path="run-experiment">
   <Page>
-    <RunJob />
+    <RunExperiment />
   </Page>
 </Route>
 <Route path="history">
