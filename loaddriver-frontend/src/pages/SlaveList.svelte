@@ -29,14 +29,16 @@
   onDestroy(() => {
     clearInterval(interval);
   });
+
+  const isHealthy = lastUpdate => new Date() - lastUpdate < 10000;
 </script>
 
 <style>
   .interval {
     height: 2px;
     background-color: rgba(0, 0, 200, 0.4);
-    animation: interval 10s infinite linear;
     margin-bottom: 1em;
+    animation: interval 10s infinite linear;
   }
 
   table {
@@ -52,6 +54,22 @@
   td {
     padding: 0.5em 0;
     text-align: center;
+  }
+
+  .health-badge {
+    --badge-size: 20px;
+    margin: auto;
+    width: var(--badge-size);
+    height: var(--badge-size);
+    border-radius: var(--badge-size);
+  }
+
+  .healthy {
+    background: green;
+  }
+
+  .unhealthy {
+    background: red;
   }
 
   @keyframes interval {
@@ -72,19 +90,28 @@
   <table>
     <thead>
       <tr>
+        <th>ID</th>
         <th>Location</th>
         <th>Last Heartbeat</th>
+        <th>Health</th>
       </tr>
     </thead>
     <tbody>
       {#if slaves}
-        {#each slaves as slave}
+        {#each slaves as slave, i}
           <tr>
+            <td>{i + 1}</td>
             <td>{slave.location}</td>
             <td>
               {new Date(slave.lastUpdate)
                 .toLocaleString('de-DE', 'default')
                 .replace(',', '')}
+            </td>
+            <td>
+              <div
+                class="health-badge"
+                class:healthy={isHealthy}
+                class:unhealthy={!isHealthy} />
             </td>
           </tr>
         {/each}
