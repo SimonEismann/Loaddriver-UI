@@ -16,7 +16,7 @@
   let intensityFiles = [];
   let scriptFiles = [];
   let slaves = [];
-  let useWarmup = true;
+  let useWarmup = false;
 
   const toggleWarmup = event => {
     job.warmupDuration = 30;

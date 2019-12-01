@@ -112,9 +112,8 @@
 </Panel>
 
 <Panel
-  title="Generate new basic Intensity file"
-  subtitle="Here you can configure one of the basic functions to generate a new
-  Intensity file">
+  title="Generate new Intensity file"
+  subtitle="Choose a basic function below, configure it to your needs and directly upload the generated Intensity file to the server">
   <IntensityTypeSelector />
 </Panel>
 

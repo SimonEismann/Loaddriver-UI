@@ -48,7 +48,7 @@
       {#each jobs as job, i}
         <li>
           <CollapsibleListElement>
-            <div slot="master">Job #{i}: {job.id}</div>
+            <div slot="master">Job #{i + 1}: {job.id}</div>
             <div slot="detail">
               <JobCard {job} />
             </div>

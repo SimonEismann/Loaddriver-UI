@@ -10,24 +10,30 @@
   .container {
     width: 100%;
     height: 100%;
-    display: grid;
     background-color: white;
-    grid-template-areas:
-      "details details"
-      "log results";
-    grid-template-columns: 1fr 1fr;
   }
 
   .details {
-    grid-area: details;
-    padding: 0.5em 30% 0.5em 30%;
+    display: grid;
+    padding: 0.5em 3em;
     border-bottom: 1px solid var(--line-color);
+    grid-template-areas: "col1 col2";
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .col1 {
+    grid-area: col1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .col2 {
+    grid-area: col2;
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
 
   .button-group {
-    grid-column: 2;
     padding: 0.5em 1em;
     text-align: end;
   }
@@ -35,26 +41,30 @@
 
 <div class="container">
   <div class="details">
-    <span>ID:</span>
-    <span>{job.id}</span>
-    <span>Warmup Duration:</span>
-    <span>{job.warmupDuration}</span>
-    <span>Warmup Pause:</span>
-    <span>{job.warmupPause}</span>
-    <span>Warmup Rate:</span>
-    <span>{job.warmupRate}</span>
-    <span>Randomize Users?:</span>
-    <span>{job.randomizeUsers ? 'yes' : 'no'}</span>
-    <span>Threads:</span>
-    <span>{job.threads}</span>
-    <span>Timeout:</span>
-    <span>{job.timeout}</span>
-    <span>Number of Slaves:</span>
-    <span>{job.slaves.length}</span>
-    <span>Script:</span>
-    <span>{job.scriptName}</span>
-    <span>Intensity file:</span>
-    <span>{job.intensityFile}</span>
+    <div class="col1">
+      <span>Started at:</span>
+      <span>{job.id}</span>
+      <span>Warmup Duration:</span>
+      <span>{job.warmupDuration}</span>
+      <span>Warmup Pause:</span>
+      <span>{job.warmupPause}</span>
+      <span>Warmup Rate:</span>
+      <span>{job.warmupRate}</span>
+      <span>Randomize Users?:</span>
+      <span>{job.randomizeUsers ? 'yes' : 'no'}</span>
+    </div>
+    <div class="col2">
+      <span>Threads:</span>
+      <span>{job.threads}</span>
+      <span>Timeout:</span>
+      <span>{job.timeout}</span>
+      <span>Number of Slaves:</span>
+      <span>{job.slaves.length}</span>
+      <span>Script:</span>
+      <span>{job.scriptName}</span>
+      <span>Intensity file:</span>
+      <span>{job.intensityFile}</span>
+    </div>
   </div>
   <div class="button-group">
     <FileDownloader
