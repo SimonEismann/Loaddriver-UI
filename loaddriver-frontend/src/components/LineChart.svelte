@@ -35,6 +35,9 @@
                 scaleLabel: {
                   display: true,
                   labelString: "Requests/second"
+                },
+                ticks: {
+                  beginAtZero: true
                 }
               }
             ],
@@ -59,9 +62,7 @@
     }
   };
 
-  afterUpdate(() => {
-    updateChart();
-  });
+  afterUpdate(updateChart);
 </script>
 
 <canvas

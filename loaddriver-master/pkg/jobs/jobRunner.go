@@ -103,7 +103,7 @@ func NewDefaultJob(slaves []string) job {
 		WarmupPause:    5,
 		WarmupRate:     0.0,
 		Threads:        128,
-		Timeout:        0,
+		Timeout:        5000,
 		RandomizeUsers: false,
 	}
 }
