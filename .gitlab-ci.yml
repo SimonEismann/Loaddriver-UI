@@ -38,6 +38,7 @@ build-master:
     entrypoint: [""]
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cd loaddriver-master
     - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-master --dockerfile $CI_PROJECT_DIR/loaddriver-master/Dockerfile --destination $IMAGE_TAG_MASTER:$CI_COMMIT_SHA --destination $IMAGE_TAG_MASTER:latest
 
 build-slave:
@@ -46,9 +47,8 @@ build-slave:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
-    - echo $IMAGE_TAG_SLAVE
-    - echo $IMAGE_TAG_SLAVE:latest
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cd loaddriver-slave
     - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-slave --dockerfile $CI_PROJECT_DIR/loaddriver-slave/Dockerfile --destination $IMAGE_TAG_SLAVE:$CI_COMMIT_SHA --destination $IMAGE_TAG_SLAVE:latest
 
 build-frontend:
@@ -58,6 +58,7 @@ build-frontend:
     entrypoint: [""]
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cd loaddriver-frontend
     - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-frontend --dockerfile $CI_PROJECT_DIR/loaddriver-frontend/Dockerfile --destination $IMAGE_TAG_FRONTEND:$CI_COMMIT_SHA --destination $IMAGE_TAG_FRONTEND:latest
 
 retag:
