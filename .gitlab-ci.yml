@@ -5,9 +5,9 @@ stages:
   - deploy
 
 variables:
-  IMAGE_TAG_FRONTEND: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_REF_SLUG
-  IMAGE_TAG_MASTER: $CI_REGISTRY_IMAGE/master:$CI_COMMIT_REF_SLUG
-  IMAGE_TAG_SLAVE: $CI_REGISTRY_IMAGE/slave:$CI_COMMIT_REF_SLUG
+  IMAGE_TAG_FRONTEND: $CI_REGISTRY_IMAGE/frontend
+  IMAGE_TAG_MASTER: $CI_REGISTRY_IMAGE/master
+  IMAGE_TAG_SLAVE: $CI_REGISTRY_IMAGE/slave
   IMAGE_TAG_FRONTEND_STABLE: $CI_REGISTRY_IMAGE/frontend:stable
   IMAGE_TAG_MASTER_STABLE: $CI_REGISTRY_IMAGE/master:stable
   IMAGE_TAG_SLAVE_STABLE: $CI_REGISTRY_IMAGE/slave:stable
@@ -37,9 +37,8 @@ build-master:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
-    - echo $CI_REGISTRY_IMAGE
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-master --dockerfile $CI_PROJECT_DIR/loaddriver-master/Dockerfile --destination $IMAGE_TAG_MASTER --destination $IMAGE_TAG_MASTER:latest
+    - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-master --dockerfile $CI_PROJECT_DIR/loaddriver-master/Dockerfile --destination $IMAGE_TAG_MASTER:$CI_COMMIT_SHA --destination $IMAGE_TAG_MASTER:latest
 
 build-slave:
   stage: build
@@ -47,8 +46,10 @@ build-slave:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
+    - echo $IMAGE_TAG_SLAVE
+    - echo $IMAGE_TAG_SLAVE:latest
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-slave --dockerfile $CI_PROJECT_DIR/loaddriver-slave/Dockerfile --destination $IMAGE_TAG_SLAVE --destination $IMAGE_TAG_SLAVE:latest
+    - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-slave --dockerfile $CI_PROJECT_DIR/loaddriver-slave/Dockerfile --destination $IMAGE_TAG_SLAVE:$CI_COMMIT_SHA --destination $IMAGE_TAG_SLAVE:latest
 
 build-frontend:
   stage: build
@@ -57,7 +58,7 @@ build-frontend:
     entrypoint: [""]
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-frontend --dockerfile $CI_PROJECT_DIR/loaddriver-frontend/Dockerfile --destination $IMAGE_TAG_FRONTEND --destination $IMAGE_TAG_FRONTEND:latest
+    - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-frontend --dockerfile $CI_PROJECT_DIR/loaddriver-frontend/Dockerfile --destination $IMAGE_TAG_FRONTEND:$CI_COMMIT_SHA --destination $IMAGE_TAG_FRONTEND:latest
 
 retag:
   stage: retag
@@ -68,9 +69,9 @@ retag:
     - master
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - echo "FROM $IMAGE_TAG_FRONTEND" | /kaniko/executor --dockerfile /dev/stdin --destination $IMAGE_TAG_FRONTEND_STABLE
-    - echo "FROM $IMAGE_TAG_MASTER" | /kaniko/executor --dockerfile /dev/stdin --destination $IMAGE_TAG_MASTER_STABLE
-    - echo "FROM $IMAGE_TAG_SLAVE" | /kaniko/executor --dockerfile /dev/stdin --destination $IMAGE_TAG_SLAVE_STABLE
+    - echo "FROM $IMAGE_TAG_FRONTEND:$CI_COMMIT_SHA" | /kaniko/executor --dockerfile /dev/stdin --destination $IMAGE_TAG_FRONTEND_STABLE
+    - echo "FROM $IMAGE_TAG_MASTER:$CI_COMMIT_SHA" | /kaniko/executor --dockerfile /dev/stdin --destination $IMAGE_TAG_MASTER_STABLE
+    - echo "FROM $IMAGE_TAG_SLAVE:$CI_COMMIT_SHA" | /kaniko/executor --dockerfile /dev/stdin --destination $IMAGE_TAG_SLAVE_STABLE
 
 deploy-prod:
   stage: deploy
