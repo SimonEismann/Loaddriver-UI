@@ -4,9 +4,6 @@ stages:
   - retag
   - deploy
 
-include:
-  template: SAST.gitlab-ci.yml
-
 variables:
   IMAGE_TAG_FRONTEND: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
   IMAGE_TAG_MASTER: $CI_REGISTRY_IMAGE/master:$CI_COMMIT_SHA
@@ -15,9 +12,6 @@ variables:
   IMAGE_TAG_MASTER_STABLE: $CI_REGISTRY_IMAGE/master:stable
   IMAGE_TAG_SLAVE_STABLE: $CI_REGISTRY_IMAGE/slave:stable
   GO111MODULE: "on"
-  SCAN_KUBERNETES_MANIFESTS: "true"
-  SAST_DISABLE_DIND: "true"
-  SAST_DEFAULT_ANALYZERS: "secrets,kubesec,eslint,gosec"
 
 test-master:
   stage: test
