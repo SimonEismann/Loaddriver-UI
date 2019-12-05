@@ -30,7 +30,7 @@
     clearInterval(interval);
   });
 
-  const isHealthy = lastUpdate => new Date() - lastUpdate < 10000;
+  const isHealthy = lastUpdate => new Date() - new Date(lastUpdate) < 10000;
 </script>
 
 <style>
@@ -110,8 +110,8 @@
             <td>
               <div
                 class="health-badge"
-                class:healthy={isHealthy}
-                class:unhealthy={!isHealthy} />
+                class:healthy={isHealthy(slave.lastUpdate)}
+                class:unhealthy={!isHealthy(slave.lastUpdate)} />
             </td>
           </tr>
         {/each}

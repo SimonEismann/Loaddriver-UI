@@ -48,7 +48,9 @@
     });
     intensityFiles = await (await intensityPromise).json();
     scriptFiles = await (await scriptPromise).json();
-    slaves = await (await slavesPromise).json();
+    slaves = (await (await slavesPromise).json()).filter(
+      slave => new Date() - new Date(slave.lastUpdate) < 10000
+    );
     job.intensityFile = intensityFiles[0];
     job.scriptName = scriptFiles[0];
     job.slaves = slaves.map(s => s.location);
@@ -109,6 +111,12 @@
     label="Timeout"
     bind:value={job.timeout}
     min="0" />
+  <MultiSelect
+    tooltip="Slaves to be used for this experiment."
+    bind:values={job.slaves}
+    aria="select-slaves"
+    label="Slaves"
+    options={slaves.map(s => s.location)} />
   <Select
     tooltip="Intensity file name to be used for this experiment. See
     'Intensities' page for more details on the available files below."
@@ -123,11 +131,5 @@
     aria="script-file"
     label="Script File"
     options={scriptFiles.map(file => new SelectItem(file, file))} />
-  <MultiSelect
-    tooltip="Slaves to be used for this experiment."
-    bind:values={job.slaves}
-    aria="select-slaves"
-    label="Slaves"
-    options={slaves.map(s => s.location)} />
   <slot />
 </form>

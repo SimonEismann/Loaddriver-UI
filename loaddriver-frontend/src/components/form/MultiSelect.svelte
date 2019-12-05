@@ -10,7 +10,7 @@
 <style>
   .wrapper {
     width: 50%;
-    margin: 0.5em auto 0.5em auto;
+    margin: 1em 0.1em;
     display: grid;
     grid-template-columns: 1fr 1fr;
     row-gap: 0.5em;
