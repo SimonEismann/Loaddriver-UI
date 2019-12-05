@@ -19,7 +19,8 @@ test-master:
   allow_failure: true
   script:
     - export GO111MODULE=on
-    - go test ./loaddriver-master/...
+    - cd loaddriver-master
+    - go test ./...
 
 test-slave:
   stage: test
@@ -27,6 +28,7 @@ test-slave:
   allow_failure: true
   script:
     - export GO111MODULE=on
+    - cd loaddriver-slave
     - go test ./loaddriver-slave/...
 
 build-master:
@@ -35,6 +37,7 @@ build-master:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}"
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR/loaddriver-master --dockerfile $CI_PROJECT_DIR/loaddriver-master/Dockerfile --destination $IMAGE_TAG_MASTER --destination $IMAGE_TAG_MASTER:latest
 
