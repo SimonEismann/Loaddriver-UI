@@ -40,7 +40,7 @@
 
   .slot {
     position: relative;
-    overflow: auto;
+    overflow: hidden;
     background-color: white;
     z-index: 2;
     padding: 0em 2em 1em 2em;

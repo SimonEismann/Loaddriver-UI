@@ -29,10 +29,13 @@
     font-family: monospace;
     margin-bottom: 1em;
     padding: 1em;
+    max-height: 70vh;
+    overflow: auto;
+    font-size: 1.2em;
   }
 </style>
 
 <pre readonly>{text}</pre>
 <FileDownloader fileName={filename} {url}>
-  <Button backgroundColor="#0A69D9" value="Download" icon="fa-file-alt" />
+  <Button backgroundColor="#0A69D9" value="Download" icon="fa-download" />
 </FileDownloader>
