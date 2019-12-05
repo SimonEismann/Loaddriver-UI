@@ -1,8 +1,8 @@
 <script context="module">
   import { modalState } from "../stores.js";
 
-  export const open = (Component, props) => {
-    modalState.open(Component, props);
+  export const open = (Component, title, props) => {
+    modalState.open(Component, title, props);
   };
 
   export const close = () => {
@@ -13,6 +13,7 @@
 <script>
   import { fade } from "svelte/transition";
 
+  $: title = $modalState.title;
   $: Component = $modalState.Component;
   $: props = $modalState.props;
 
@@ -42,6 +43,7 @@
     overflow: auto;
     background-color: white;
     z-index: 2;
+    padding: 0em 2em 1em 2em;
   }
 
   .closer {
@@ -49,6 +51,10 @@
     right: 15px;
     top: 15px;
     cursor: pointer;
+  }
+
+  .header {
+    margin: 1em 0em;
   }
 </style>
 
@@ -61,6 +67,9 @@
     <div class="slot" on:click|stopPropagation>
       <div class="closer" on:click={modalState.close}>
         <i class="fa fa-times" />
+      </div>
+      <div class="header">
+        <h1>{title}</h1>
       </div>
       <Component {...props} />
     </div>

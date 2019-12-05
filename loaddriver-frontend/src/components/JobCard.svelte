@@ -1,9 +1,15 @@
 <script>
   import FileDownloader from "./FileDownloader.svelte";
   import Button from "./form/Button.svelte";
+  import { open } from "./Modal.svelte";
   import { API_ROOT } from "../env.js";
+  import TextPreview from "./TextPreview.svelte";
 
   export let job = null;
+
+  $: logFileName = `${job.id}.log`;
+  $: logURL = `${API_ROOT}/jobs/${job.id}/log`;
+  $: resultsURL = `${API_ROOT}/jobs/${job.id}/result`;
 </script>
 
 <style>
@@ -67,17 +73,18 @@
     </div>
   </div>
   <div class="button-group">
-    <FileDownloader
-      fileName={`${job.id}.log`}
-      url={`${API_ROOT}/jobs/${job.id}/log`}>
-      <Button
-        backgroundColor="#0A69D9"
-        value="Download logs"
-        icon="fa-file-alt" />
-    </FileDownloader>
-    <FileDownloader
-      fileName={`${job.id}.csv`}
-      url={`${API_ROOT}/jobs/${job.id}/result`}>
+    <Button
+      value="View logs"
+      icon="fa-file-alt"
+      backgroundColor="#0A69D9"
+      on:click={() => {
+        open(TextPreview, 'Log Preview', {
+          url: logURL,
+          filename: logFileName
+        });
+      }} />
+
+    <FileDownloader fileName={`${job.id}.csv`} url={resultsURL}>
       <Button
         backgroundColor="#1E6C41"
         value="Download results"
