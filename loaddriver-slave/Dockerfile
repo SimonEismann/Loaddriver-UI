@@ -6,10 +6,10 @@ WORKDIR /usr/app
 
 COPY go.mod .
 COPY go.sum .
-RUN ["go", "mod", "download"]
+RUN go mod download
 
 COPY . .
-RUN ["go", "build", "."]
+RUN go build .
 
 EXPOSE 24226
 EXPOSE 80
