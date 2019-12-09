@@ -48,9 +48,10 @@
 
   .closer {
     position: absolute;
-    right: 15px;
-    top: 15px;
+    right: 20px;
+    top: 20px;
     cursor: pointer;
+    font-size: 1.5em;
   }
 
   .header {

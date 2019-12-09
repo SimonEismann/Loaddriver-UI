@@ -1,35 +1,38 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import { API_ROOT, CONSOLE_URI } from "../env.js";
   let websocket;
   let log;
+  const dispatch = createEventDispatcher();
 
-  const appendLog = item => {
+  function appendLog(message) {
+    if (message.includes("finished")) {
+      dispatch("finished");
+    } else {
+      dispatch("running");
+    }
     let doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
+    const item = document.createElement("div");
+    item.innerText = message;
+    item.style = "font-family: monospace;";
     log.appendChild(item);
     if (doScroll) {
       log.scrollTop = log.scrollHeight - log.clientHeight;
     }
-  };
+  }
 
   onMount(() => {
     websocket = new WebSocket(CONSOLE_URI);
     websocket.onmessage = event => {
       let messages = event.data.split("\n");
-      for (var i = 0; i < messages.length; i++) {
-        let item = document.createElement("div");
-        item.innerText = messages[i];
-        item.style = "font-family: monospace;";
-        appendLog(item);
+      for (let message of messages) {
+        appendLog(message);
       }
     };
     websocket.onerror = event => {
       let messages = event.data.split("\n");
-      for (let i = 0; i < messages.length; i++) {
-        let item = document.createElement("div");
-        item.innerText = messages[i];
-        item.style = "font-family: monospace;";
-        appendLog(item);
+      for (let message of messages) {
+        appendLog(message);
       }
     };
   });

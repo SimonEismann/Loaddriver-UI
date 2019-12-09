@@ -2,13 +2,16 @@
   import Button from "../components/form/Button.svelte";
   import JobForm from "../components/JobForm.svelte";
   import ConsoleReader from "../components/ConsoleReader.svelte";
+  import HistoryRedirect from "../components/HistoryRedirect.svelte";
   import Panel from "../components/Panel.svelte";
-  import { open } from "../components/Modal.svelte";
+  import { open } from "../layout/Modal.svelte";
   import Job from "../model/job.js";
   import SelectItem from "../model/select-item.js";
   import { API_ROOT } from "../env.js";
 
-  const startJob = async job => {
+  function handleJobFinished() {}
+
+  async function startJob(job) {
     await fetch(`${API_ROOT}/jobs`, {
       body: JSON.stringify(job),
       headers: {
@@ -17,7 +20,7 @@
       method: "POST",
       mode: "cors"
     });
-  };
+  }
 </script>
 
 <style>
@@ -39,12 +42,17 @@
   style="margin-bottom: 1em;">
   <JobForm on:submit={e => startJob(e.detail.job)}>
     <div class="button-group">
-      <Button type="submit" backgroundColor="green" value="Start" size="1.1em" />
+      <Button
+        type="submit"
+        backgroundColor="green"
+        value="Start"
+        size="1.1em" />
     </div>
   </JobForm>
 </Panel>
 <Panel title="Live Console">
   <div class="console">
-    <ConsoleReader />
+    <ConsoleReader
+      on:finished={() => open(HistoryRedirect, 'Experiment finished!', null)} />
   </div>
 </Panel>

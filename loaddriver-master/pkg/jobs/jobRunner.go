@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -122,6 +123,8 @@ type jobRunner struct {
 	jobsMap       map[string]jobMapEntry
 	jobQueue      jobQueue
 	slaveRegistry *registry.Registry
+	runLock       sync.Mutex
+	isRunning     bool
 }
 
 func NewJobRunner(r *mux.Router, consoleChan chan []byte, slaveRegistry *registry.Registry) *jobRunner {
@@ -148,6 +151,7 @@ func NewJobRunner(r *mux.Router, consoleChan chan []byte, slaveRegistry *registr
 
 func (jq *jobRunner) Start() {
 	for nextJob := range jq.jobQueue.out {
+		jq.setIsRunning()
 		jq.logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Starting job with ID %s", nextJob.(job).Id))
 		err := jq.runJob(nextJob.(job))
 		if err != nil {
@@ -156,7 +160,26 @@ func (jq *jobRunner) Start() {
 			jq.logger.WithField("func", "jobConsumer").Infof("Job with ID %s finished", nextJob.(job).Id)
 		}
 		jq.jobsMap[nextJob.(job).Id] = jobMapEntry{nextJob.(job), true}
+		jq.unsetIsRunning()
 	}
+}
+
+func (jq *jobRunner) setIsRunning() {
+	jq.runLock.Lock()
+	defer jq.runLock.Unlock()
+	jq.isRunning = true
+}
+
+func (jq *jobRunner) unsetIsRunning() {
+	jq.runLock.Lock()
+	defer jq.runLock.Unlock()
+	jq.isRunning = false
+}
+
+func (jq *jobRunner) checkIsRunning() bool {
+	jq.runLock.Lock()
+	defer jq.runLock.Unlock()
+	return jq.isRunning
 }
 
 func (jq *jobRunner) handleGetJobsQueued(w http.ResponseWriter, req *http.Request) {
@@ -267,6 +290,10 @@ func (jq *jobRunner) handleGetJobsDone(w http.ResponseWriter, req *http.Request)
 }
 
 func (jq *jobRunner) handlePostJob(w http.ResponseWriter, req *http.Request) {
+	if jq.checkIsRunning() {
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
 	var allSlaves []string
 	for _, slave := range jq.slaveRegistry.Slaves {
 		allSlaves = append(allSlaves, string(slave.Location))

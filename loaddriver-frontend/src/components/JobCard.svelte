@@ -1,7 +1,7 @@
 <script>
   import FileDownloader from "./FileDownloader.svelte";
   import Button from "./form/Button.svelte";
-  import { open } from "./Modal.svelte";
+  import { open } from "../layout/Modal.svelte";
   import { API_ROOT } from "../env.js";
   import TextPreview from "./TextPreview.svelte";
   import ResultsPreview from "./ResultsPreview.svelte";
@@ -89,11 +89,9 @@
       value="Results"
       icon="fa-file-csv"
       backgroundColor="#1E6C41"
-      on:click={() => {
-        open(ResultsPreview, 'Results Preview', {
+      on:click={() => open(ResultsPreview, 'Results Preview', {
           url: resultsURL,
           filename: resultsFileName
-        });
-      }} />
+        })} />
   </div>
 </div>

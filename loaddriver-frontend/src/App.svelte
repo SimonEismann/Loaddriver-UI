@@ -1,7 +1,7 @@
 <script>
   import Header from "./layout/Header.svelte";
   import Main from "./layout/Main.svelte";
-  import Modal from "./components/Modal.svelte";
+  import Modal from "./layout/Modal.svelte";
   import { Router } from "svelte-routing";
   export let url = "";
 </script>
@@ -30,8 +30,8 @@
   }
 </style>
 
-<Modal />
 <Router {url}>
+  <Modal />
   <div class="main-container">
     <header id="header">
       <Header />

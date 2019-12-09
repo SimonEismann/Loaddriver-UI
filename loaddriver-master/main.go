@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"loaddriver-master/api"
 	"loaddriver-master/consoleEcho"
 	log "loaddriver-master/logger"
 	"loaddriver-master/pkg/jobs"
@@ -35,8 +34,6 @@ func main() {
 	r := mux.NewRouter()
 	hub := consoleEcho.NewHub(logger, consoleChan)
 	jobRunner := jobs.NewJobRunner(r.PathPrefix("/jobs").Subrouter(), consoleChan, slaveRegistry)
-	r.HandleFunc("", api.PrintDescription)
-	r.HandleFunc("/", api.PrintDescription)
 	r.Handle("/jobs/current/output", hub)
 	r.Handle("/registry", slaveRegistry)
 	r.HandleFunc("/scripts", handleGetAllScriptNames).Queries("names-only", "true").Methods(http.MethodGet)

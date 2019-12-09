@@ -1,4 +1,6 @@
 <script>
+  import { afterUpdate } from "svelte";
+
   export let value;
   export let backgroundColor = "green";
   export let type = "button";
@@ -18,6 +20,11 @@
     cursor: pointer;
     border-radius: 3px;
     box-shadow: var(--shadow);
+  }
+
+  button:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
   }
 </style>
 
