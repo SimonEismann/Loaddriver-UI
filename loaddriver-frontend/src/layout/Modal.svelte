@@ -44,6 +44,7 @@
     background-color: white;
     z-index: 2;
     padding: 0em 2em 1em 2em;
+    width: 60em;
   }
 
   .closer {

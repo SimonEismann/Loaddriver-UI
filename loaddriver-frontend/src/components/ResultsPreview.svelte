@@ -30,7 +30,7 @@
 <style>
   .container {
     height: 70vh;
-    width: 50vw;
+    width: 100%;
     overflow: auto;
     margin-bottom: 1em;
   }
