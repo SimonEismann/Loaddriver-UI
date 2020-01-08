@@ -11,12 +11,22 @@
   let duration = 60;
   let intensity = 10;
   let filename = "";
-  let previewData = [];
+  let previewData = {
+    label: "Intensity",
+    data: [],
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0.4
+  };
 
   $: {
-    previewData = [];
+    previewData.data = [];
     for (let i = 0; i <= duration; i++) {
-      previewData.push(new Point2D(i, intensity));
+      previewData.data.push(new Point2D(i, intensity));
     }
   }
 
@@ -45,7 +55,7 @@
     <NumberInput label="Duration" bind:value={duration} />
     <NumberInput label="Intensity" bind:value={intensity} />
     <h2 style="margin-bottom: 1em; margin-top: 1em">Preview</h2>
-    <LineChart data={previewData} />
+    <LineChart datasets={[previewData]} />
     <Button
       backgroundColor="var(--primary-action-color)"
       type="submit"

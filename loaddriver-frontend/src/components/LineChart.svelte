@@ -1,32 +1,19 @@
 <script>
   import Chart from "chart.js";
   import { afterUpdate } from "svelte";
-  export let data;
-  export let curved = true;
+  export let datasets;
   let ctx;
   let chart;
 
   const updateChart = () => {
     if (chart) {
-      chart.data.datasets[0].data = data;
+      chart.data.datasets = datasets;
       chart.update();
     } else {
       chart = new Chart(ctx, {
         type: "line",
         data: {
-          datasets: [
-            {
-              label: "Intensity",
-              data: data,
-              borderWidth: 1,
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
-              borderColor: "rgba(255, 99, 132, 1)",
-              fill: false,
-              pointRadius: 0,
-              borderWidth: 2,
-              lineTension: curved ? 0.4 : 0
-            }
-          ]
+          datasets: datasets
         },
         options: {
           scales: {

@@ -13,13 +13,23 @@
   let min = 0;
   let numOfPeriods = 1;
   let filename = "";
-  let previewData = [];
+  let previewData = {
+    label: "Intensity",
+    data: [],
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0.4
+  };
 
   $: {
-    previewData = [];
+    previewData.data = [];
     const stretch = duration / (2.0 * Math.PI);
     for (let i = 0; i <= duration; i++) {
-      previewData.push(
+      previewData.data.push(
         new Point2D(
           i,
           amplitude / 2 +
@@ -63,7 +73,7 @@
       bind:value={min}
       tooltip="The minimum intensity" />
     <h2 style="margin-bottom: 1em; margin-top: 1em">Preview</h2>
-    <LineChart data={previewData} />
+    <LineChart datasets={[previewData]} />
     <Button
       backgroundColor="var(--primary-action-color)"
       type="submit"

@@ -21,6 +21,19 @@
     selectedFile && selectedFileContent
       ? new IntensityData(selectedFile.name, selectedFileContent)
       : null;
+  $: previewDataset = preview
+    ? {
+        label: "Intensity",
+        data: preview.data,
+        borderWidth: 1,
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        fill: false,
+        pointRadius: 0,
+        borderWidth: 2,
+        lineTension: 0.4
+      }
+    : null;
 
   const fetchIntensities = async () => {
     try {
@@ -93,7 +106,7 @@
       <div class="script-preview" transition:slide>
         <h2>Intensity Preview</h2>
         {#if preview}
-          <LineChart data={preview.data} />
+          <LineChart datasets={[previewDataset]} />
         {/if}
         <Button
           type="submit"
@@ -113,7 +126,8 @@
 
 <Panel
   title="Generate new Intensity file"
-  subtitle="Choose a basic function below, configure it to your needs and directly upload the generated Intensity file to the server">
+  subtitle="Choose a basic function below, configure it to your needs and
+  directly upload the generated Intensity file to the server">
   <IntensityTypeSelector />
 </Panel>
 

@@ -5,7 +5,7 @@
   import { API_ROOT } from "../env.js";
   import { createEventDispatcher } from "svelte";
 
-  export let intensityFile = null;
+  export let intensityFile;
 
   const dispatch = createEventDispatcher();
 
@@ -19,6 +19,18 @@
     } catch (error) {
       console.log(error);
     }
+  };
+
+  $: dataset = {
+    label: "Intensity",
+    data: intensityFile.data,
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0.4
   };
 </script>
 
@@ -43,7 +55,7 @@
 
 <div class="container">
   <div class="details">
-    <LineChart data={intensityFile.data} />
+    <LineChart datasets={[dataset]} />
   </div>
   <div class="buttons">
     <FileDownloader

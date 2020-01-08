@@ -13,17 +13,27 @@
   let peak = 10;
   let numOfPeaks = 1;
   let filename = "";
-  let previewData = [];
+  let previewData = {
+    label: "Intensity",
+    data: [],
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0
+  };
 
   $: {
-    previewData = [];
+    previewData.data = [];
     const stepSize = duration / (numOfPeaks * 2.0);
     let m = (peak - min) / stepSize;
     let previous = min;
-    previewData.push(new Point2D(0, min));
+    previewData.data.push(new Point2D(0, min));
     for (let i = 1; i <= duration; i++) {
       let next = previous + m;
-      previewData.push(new Point2D(i, next < 0 ? 0 : next));
+      previewData.data.push(new Point2D(i, next < 0 ? 0 : next));
       previous = next < 0 ? 0 : next;
       if (i % stepSize == 0) {
         m *= -1.0;
@@ -58,7 +68,7 @@
     <NumberInput label="Peak Intensity" bind:value={peak} />
     <NumberInput label="Number of Peaks" bind:value={numOfPeaks} />
     <h2 style="margin-bottom: 1em; margin-top: 1em">Preview</h2>
-    <LineChart data={previewData} curved={false} />
+    <LineChart datasets={[previewData]} />
     <Button
       backgroundColor="var(--primary-action-color)"
       type="submit"

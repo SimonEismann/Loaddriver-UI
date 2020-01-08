@@ -3,33 +3,67 @@
   import IntensityData, { Point2D } from "../../model/intensity-data.js";
   import { links } from "svelte-routing";
 
-  const constantPreviewData = [new Point2D(0.0, 1.0), new Point2D(4.0, 1.0)];
+  const constantPreviewData = {
+    label: "Intensity",
+    data: [new Point2D(0.0, 1.0), new Point2D(4.0, 1.0)],
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0.4
+  };
 
-  const linearPreviewData = [new Point2D(0.0, 0.0), new Point2D(4.0, 1.0)];
+  const linearPreviewData = {
+    label: "Intensity",
+    data: [new Point2D(0.0, 0.0), new Point2D(4.0, 1.0)],
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0.4
+  };
 
-  const sinePreviewData = [];
+  const sinePreviewData = {label: "Intensity",
+    data: [],
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0.4};
   const stretch = 4 / (2.0 * Math.PI);
   for (let i = 0.0; i <= 4; i = i + 0.25) {
-    sinePreviewData.push(new Point2D(i, Math.sin(i / stretch)));
+    sinePreviewData.data.push(new Point2D(i, Math.sin(i / stretch)));
   }
 
-  const peakPreviewData = [
-    new Point2D(0.0, 0.0),
-    new Point2D(1.0, 0.5),
-    new Point2D(2.0, 1.0),
-    new Point2D(3.0, 0.5),
-    new Point2D(4.0, 0.0)
-  ];
+  const peakPreviewData = {
+    label: "Intensity",
+    data: [
+      new Point2D(0.0, 0.0),
+      new Point2D(1.0, 0.5),
+      new Point2D(2.0, 1.0),
+      new Point2D(3.0, 0.5),
+      new Point2D(4.0, 0.0)
+    ],
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 99, 132, 0.2)",
+    borderColor: "rgba(255, 99, 132, 1)",
+    fill: false,
+    pointRadius: 0,
+    borderWidth: 2,
+    lineTension: 0
+  };
 </script>
 
 <style>
   a {
     text-decoration: none;
     color: inherit;
-  }
-
-  h2 {
-    margin-bottom: 0.5em;
   }
 
   .function-grid {
@@ -59,25 +93,25 @@
   <a href="intensities/create/constant">
     <div class="function-card">
       <h3>Constant</h3>
-      <LineChart data={constantPreviewData} />
+      <LineChart datasets={[constantPreviewData]} />
     </div>
   </a>
   <a href="intensities/create/linear">
     <div class="function-card">
       <h3>Linear</h3>
-      <LineChart data={linearPreviewData} />
+      <LineChart datasets={[linearPreviewData]} />
     </div>
   </a>
   <a href="intensities/create/periodic">
     <div class="function-card">
       <h3>Periodic</h3>
-      <LineChart data={sinePreviewData} />
+      <LineChart datasets={[sinePreviewData]} />
     </div>
   </a>
   <a href="intensities/create/peak">
     <div class="function-card">
       <h3>Peak</h3>
-      <LineChart data={peakPreviewData} curved={false} />
+      <LineChart datasets={[peakPreviewData]} />
     </div>
   </a>
 </div>
