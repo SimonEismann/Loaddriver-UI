@@ -30,12 +30,6 @@
     background-color: white;
   }
 
-  textarea {
-    margin: 0.5em 0;
-    width: 100%;
-    resize: none;
-  }
-
   .details {
     width: 100%;
     height: 80%;

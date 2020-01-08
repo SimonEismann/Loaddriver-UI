@@ -43,7 +43,17 @@
 
   .button-group {
     padding: 0.5em 1em;
-    text-align: end;
+    display: flex;
+    justify-content: center;
+  }
+
+  .button-group__logs {
+    text-align: start;
+    margin-right: 1em;
+  }
+
+  .button-group__results {
+    margin-left: 1em;
   }
 </style>
 
@@ -75,23 +85,33 @@
     </div>
   </div>
   <div class="button-group">
-    <Button
-      value="Logs"
-      icon="fa-file-alt"
-      backgroundColor="#0A69D9"
-      on:click={() => {
-        open(TextPreview, 'Log Preview', {
-          url: logURL,
-          filename: logFileName
-        });
-      }} />
-    <Button
-      value="Results"
-      icon="fa-file-csv"
-      backgroundColor="#1E6C41"
-      on:click={() => open(ResultsPreview, 'Results Preview', {
-          url: resultsURL,
-          filename: resultsFileName
-        })} />
+    <div class="button-group__logs">
+      <Button
+        value="Logs"
+        icon="fa-file-alt"
+        backgroundColor="#0A69D9"
+        on:click={() => {
+          open(TextPreview, 'Log Preview', {
+            url: logURL,
+            filename: logFileName
+          });
+        }} />
+      <FileDownloader fileName={logFileName} url={logURL}>
+        <Button backgroundColor="#0A69D9" value="" icon="fa-download" />
+      </FileDownloader>
+    </div>
+    <div class="button-group__results">
+      <Button
+        value="Results"
+        icon="fa-file-csv"
+        backgroundColor="#1E6C41"
+        on:click={() => open(ResultsPreview, 'Results Preview', {
+            url: resultsURL,
+            filename: resultsFileName
+          })} />
+      <FileDownloader fileName={resultsFileName} url={resultsURL}>
+        <Button backgroundColor="#1E6C41" value="" icon="fa-download" />
+      </FileDownloader>
+    </div>
   </div>
 </div>

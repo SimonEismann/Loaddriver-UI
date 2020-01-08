@@ -28,12 +28,18 @@
 </script>
 
 <style>
+  .container {
+    height: 70vh;
+    width: 50vw;
+    overflow: auto;
+    margin-bottom: 1em;
+  }
+
   table {
+    height: 100%;
     width: 100%;
     margin-bottom: 1em;
     padding: 1em;
-    max-height: 70vh;
-    overflow: auto;
     border-spacing: 0;
     table-layout: fixed;
   }
@@ -41,41 +47,79 @@
   th {
     padding-bottom: 0.5em;
     border-bottom: 1px solid var(--line-color);
-    word-break: break-all;
+    word-break: normal;
+  }
+
+  tr {
+    word-break: normal;
   }
 
   td {
-    padding: 0.5em 0;
+    padding: 0.2em 0;
     text-align: center;
   }
 </style>
 
-<table>
-  <thead>
-    <tr>
-      <th>Target Time</th>
-      <th>Load Intensity</th>
-      <th>Successful Transactions</th>
-      <th>Failed Transactions</th>
-      <th>Dropped Transactions</th>
-      <th>Average Response Time</th>
-      <th>Final Batch Dispatch Time</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each results as position}
+<div class="container">
+  <table>
+    <thead>
       <tr>
-        <td>{position[0]}</td>
-        <td>{position[1]}</td>
-        <td>{position[2]}</td>
-        <td>{position[3]}</td>
-        <td>{position[4]}</td>
-        <td>{position[5]}</td>
-        <td>{position[6]}</td>
+        <th>
+          Target
+          <br />
+          Time
+        </th>
+        <th>
+          Load
+          <br />
+          Intensity
+        </th>
+        <th>
+          Successful
+          <br />
+          Transactions
+        </th>
+        <th>
+          Failed
+          <br />
+          Transactions
+        </th>
+        <th>
+          Dropped
+          <br />
+          Transactions
+        </th>
+        <th>
+          Average
+          <br />
+          Response Time
+        </th>
+        <th>
+          Final
+          <br />
+          Batch
+          <br />
+          Dispatch
+          <br />
+          Time
+        </th>
       </tr>
-    {/each}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {#each results as position}
+        <tr>
+          <td>{position[0]}</td>
+          <td>{position[1]}</td>
+          <td>{position[2]}</td>
+          <td>{position[3]}</td>
+          <td>{position[4]}</td>
+          <td>{position[5]}</td>
+          <td>{position[6]}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</div>
 <FileDownloader fileName={filename} {url}>
   <Button backgroundColor="#0A69D9" value="Download" icon="fa-download" />
 </FileDownloader>

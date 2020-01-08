@@ -55,7 +55,7 @@
   }
 
   .header {
-    margin: 1em 0em;
+    margin: 1.5em 0em 1em 0em;
   }
 </style>
 
