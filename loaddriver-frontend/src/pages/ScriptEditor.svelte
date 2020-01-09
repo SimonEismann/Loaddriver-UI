@@ -1,0 +1,73 @@
+<script>
+  import Panel from "../components/Panel.svelte";
+  import CodeEditor from "../components/CodeEditor.svelte";
+  import Button from "../components/form/Button.svelte";
+  import TextInput from "../components/form/TextInput.svelte";
+  import { Link, navigate } from "svelte-routing";
+  import { onMount } from "svelte";
+  import { API_ROOT } from "../env.js";
+  import TextFile from "../model/text-file.js";
+
+  export let scriptId = null;
+  let scriptContent = "";
+  let isEditing = false;
+
+  onMount(async () => {
+    if (scriptId) {
+      isEditing = true;
+    }
+    const promise = await fetch(`${API_ROOT}/scripts/${scriptId}`, {
+      headers: {
+        "Content-type": "application/json"
+      },
+      method: "GET",
+      mode: "cors"
+    });
+    scriptContent = await promise.text();
+  });
+
+  const upload = async () => {
+    try {
+      await fetch(`${API_ROOT}/scripts`, {
+        body: JSON.stringify(new TextFile(scriptId, scriptContent)),
+        headers: {
+          "Content-type": "application/json"
+        },
+        method: "POST",
+        mode: "cors"
+      });
+      navigate("/scripts");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+</script>
+
+<style>
+
+</style>
+
+<Panel title="Script Editor">
+  <form on:submit|preventDefault={upload}>
+    <TextInput
+      label="Filename (Required)"
+      bind:value={scriptId}
+      required="true"
+      readonly={isEditing} />
+    <CodeEditor bind:value={scriptContent} />
+    <Button
+      value="Save"
+      backgroundColor="var(--primary-action-color)"
+      type="submit"
+      icon="fa fa-save"
+      on:click={() => {}} />
+    <Link to="scripts">
+      <Button
+        value="Cancel"
+        backgroundColor="red"
+        type="button"
+        icon="fa fa-times"
+        on:click={() => {}} />
+    </Link>
+  </form>
+</Panel>

@@ -5,6 +5,7 @@
   export let aria = `${new Date().getTime()}${Math.random()}`;
   export let tooltip = null;
   export let required = false;
+  export let readonly = false;
 </script>
 
 <style>
@@ -32,5 +33,11 @@
   {/if}
 </label>
 <div class="wrapper">
-  <input id={aria} type="text" bind:value {required} class:required />
+  <input
+    id={aria}
+    type="text"
+    bind:value
+    {required}
+    class:required
+    {readonly} />
 </div>

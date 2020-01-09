@@ -11,6 +11,7 @@
   import LinearIntensityWizard from "../pages/intensity-wizard/LinearIntensityWizard.svelte";
   import PeriodicIntensityWizard from "../pages/intensity-wizard/PeriodicIntensityWizard.svelte";
   import PeakIntensityWizard from "../pages/intensity-wizard/PeakIntensityWizard.svelte";
+  import ScriptEditor from "../pages/ScriptEditor.svelte";
   import { Route } from "svelte-routing";
 </script>
 
@@ -57,6 +58,16 @@
 <Route path="scripts">
   <Page>
     <Scripts />
+  </Page>
+</Route>
+<Route path="scripts/edit/:id" let:params>
+  <Page>
+    <ScriptEditor scriptId={params.id} />
+  </Page>
+</Route>
+<Route path="scripts/edit" let:params>
+  <Page>
+    <ScriptEditor />
   </Page>
 </Route>
 <Route path="">

@@ -6,6 +6,7 @@
   import CollapsibleListElement from "../components/CollapsibleListElement.svelte";
   import ScriptFileCard from "../components/ScriptFileCard.svelte";
   import TextFile from "../model/text-file.js";
+  import { Link } from "svelte-routing";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
   import { API_ROOT } from "../env.js";
@@ -101,6 +102,12 @@
       </div>
     {/if}
   </form>
+</Panel>
+
+<Panel title="Create new Script">
+  <Link to="scripts/edit/">
+    <Button value="Open editor" backgroundColor="var(--primary-action-color)" />
+  </Link>
 </Panel>
 
 <Panel title="Available Scripts" subtitle="List of all available scripts.">

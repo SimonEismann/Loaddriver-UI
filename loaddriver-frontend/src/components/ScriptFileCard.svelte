@@ -5,6 +5,7 @@
   import Button from "./form/Button.svelte";
   import { API_ROOT } from "../env.js";
   import { createEventDispatcher } from "svelte";
+  import { Link } from "svelte-routing";
 
   export let scriptFile = null;
 
@@ -48,9 +49,12 @@
     <CodeEditor value={scriptFile.content} readOnly={true} />
   </div>
   <div class="buttons">
+    <Link to={`scripts/edit/${scriptFile.name}`}>
+      <Button value="Edit" icon="fas fa-edit" />
+    </Link>
     <FileDownloader
-      fileName={`${scriptFile.fileName}`}
-      url={`${API_ROOT}/scripts/${scriptFile.fileName}`}>
+      fileName={`${scriptFile.name}`}
+      url={`${API_ROOT}/scripts/${scriptFile.name}`}>
       <Button
         backgroundColor="var(--primary-action-color)"
         value="Download"
