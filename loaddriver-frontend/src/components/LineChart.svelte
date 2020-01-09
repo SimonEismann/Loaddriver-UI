@@ -2,6 +2,8 @@
   import Chart from "chart.js";
   import { afterUpdate } from "svelte";
   export let datasets;
+  export let additionalAxes = [];
+  export let showLegend = false;
   let ctx;
   let chart;
 
@@ -19,6 +21,7 @@
           scales: {
             yAxes: [
               {
+                id: "main",
                 scaleLabel: {
                   display: true,
                   labelString: "Requests/second"
@@ -26,7 +29,8 @@
                 ticks: {
                   beginAtZero: true
                 }
-              }
+              },
+              ...additionalAxes
             ],
             xAxes: [
               {
@@ -39,7 +43,7 @@
             ]
           },
           legend: {
-            display: false
+            display: showLegend
           },
           tooltips: {
             enabled: false

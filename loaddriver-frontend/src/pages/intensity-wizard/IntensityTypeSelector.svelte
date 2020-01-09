@@ -18,7 +18,6 @@
   const linearPreviewData = {
     label: "Intensity",
     data: [new Point2D(0.0, 0.0), new Point2D(4.0, 1.0)],
-    borderWidth: 1,
     backgroundColor: "rgba(255, 99, 132, 0.2)",
     borderColor: "rgba(255, 99, 132, 1)",
     fill: false,
