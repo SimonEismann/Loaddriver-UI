@@ -90,6 +90,29 @@
 </style>
 
 <Panel
+  title="Available Intensity files"
+  subtitle="Currently available Intensity files usable for experiments">
+  {#if intensityFiles && intensityFiles.length != 0}
+    <ul>
+      {#each intensityFiles as intensityFile}
+        <li>
+          <CollapsibleListElement>
+            <div slot="master">{intensityFile.fileName}</div>
+            <div slot="detail">
+              <IntensityFileCard
+                {intensityFile}
+                on:deleted={() => fetchIntensities()} />
+            </div>
+          </CollapsibleListElement>
+        </li>
+      {/each}
+    </ul>
+  {:else}
+    <p style="text-align: center;">No Intensity files currently available</p>
+  {/if}
+</Panel>
+
+<Panel
   title="Upload Intensity file"
   subtitle="Upload Intensity file to make it available for experiments"
   style="margin-bottom: 1em;">
@@ -128,27 +151,4 @@
   subtitle="Choose a basic function below, configure it to your needs and
   directly upload the generated Intensity file to the server">
   <IntensityTypeSelector />
-</Panel>
-
-<Panel
-  title="Available Intensity files"
-  subtitle="Currently available Intensity files usable for experiments">
-  {#if intensityFiles && intensityFiles.length != 0}
-    <ul>
-      {#each intensityFiles as intensityFile}
-        <li>
-          <CollapsibleListElement>
-            <div slot="master">{intensityFile.fileName}</div>
-            <div slot="detail">
-              <IntensityFileCard
-                {intensityFile}
-                on:deleted={() => fetchIntensities()} />
-            </div>
-          </CollapsibleListElement>
-        </li>
-      {/each}
-    </ul>
-  {:else}
-    <p style="text-align: center;">No Intensity files currently available</p>
-  {/if}
 </Panel>

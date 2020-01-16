@@ -77,6 +77,25 @@
   }
 </style>
 
+<Panel title="Available Scripts" subtitle="List of all available scripts.">
+  {#if availableScripts.length === 0}
+    <p style="text-align: center;">No scripts currently available</p>
+  {:else}
+    <ul>
+      {#each availableScripts as script}
+        <li>
+          <CollapsibleListElement>
+            <div slot="master">{script.name}</div>
+            <div slot="detail">
+              <ScriptFileCard scriptFile={script} />
+            </div>
+          </CollapsibleListElement>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+</Panel>
+
 <Panel
   title="Upload Script (Lua file)"
   subtitle="Upload new scripts to make it available for experiments"
@@ -108,23 +127,4 @@
   <Link to="scripts/edit/">
     <Button value="Open editor" backgroundColor="var(--primary-action-color)" />
   </Link>
-</Panel>
-
-<Panel title="Available Scripts" subtitle="List of all available scripts.">
-  {#if availableScripts.length === 0}
-    <p style="text-align: center;">No scripts currently available</p>
-  {:else}
-    <ul>
-      {#each availableScripts as script}
-        <li>
-          <CollapsibleListElement>
-            <div slot="master">{script.name}</div>
-            <div slot="detail">
-              <ScriptFileCard scriptFile={script} />
-            </div>
-          </CollapsibleListElement>
-        </li>
-      {/each}
-    </ul>
-  {/if}
 </Panel>
