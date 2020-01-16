@@ -33,7 +33,7 @@
     try {
       await uploadIntensityFile(
         filename,
-        previewData.map(point => `${point.x + 0.5},${point.y}`).join("\n")
+        previewData.data.map(point => `${point.x + 0.5},${point.y}`).join("\n")
       );
       navigate("/intensities");
     } catch (error) {
