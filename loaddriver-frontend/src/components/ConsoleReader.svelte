@@ -9,7 +9,7 @@
     if (message.includes("finished")) {
       dispatch("finished");
     } else {
-      dispatch("running");
+      dispatch("updated");
     }
     let doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
     const item = document.createElement("div");

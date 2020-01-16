@@ -154,13 +154,15 @@ func (jq *jobRunner) Start() {
 	for nextJob := range jq.jobQueue.out {
 		jq.setIsRunning()
 		jq.logger.WithField("func", "jobConsumer").Info(fmt.Sprintf("Starting job with ID %s", nextJob.(job).Id))
-		err := jq.runJob(nextJob.(job))
+		completed, err := jq.runJob(nextJob.(job))
 		if err != nil {
 			jq.logger.WithField("func", "jobConsumer").Error("Job finished with errors")
 		} else {
 			jq.logger.WithField("func", "jobConsumer").Infof("Job with ID %s finished", nextJob.(job).Id)
 		}
-		jq.jobsMap[nextJob.(job).Id] = jobMapEntry{nextJob.(job), true}
+		if completed {
+			jq.jobsMap[nextJob.(job).Id] = jobMapEntry{nextJob.(job), true}
+		}
 		jq.unsetIsRunning()
 	}
 }
@@ -222,9 +224,9 @@ func (jq *jobRunner) handlePostJob(w http.ResponseWriter, req *http.Request) {
 
 func (jq *jobRunner) handleGetJobsIsRunning(w http.ResponseWriter, req *http.Request) {
 	result := struct {
-		isRunning bool
+		IsRunning bool `json:"isRunning"`
 	}{
-		isRunning: jq.checkIsRunning(),
+		IsRunning: jq.checkIsRunning(),
 	}
 	resp, err := json.MarshalIndent(result, "", "\t")
 	if err != nil {
@@ -369,18 +371,18 @@ func (jq *jobRunner) stopSlaves(slaves []string) {
 	}
 }
 
-func (jq *jobRunner) runJob(jobToStart job) error {
+func (jq *jobRunner) runJob(jobToStart job) (bool, error) {
 	resultsFileName := fmt.Sprintf("%s.csv", jobToStart.Id)
 	f, err := shared.CreateFile(filepath.Join(shared.GetExecDir(), "results"), resultsFileName)
 	if err != nil {
 		jq.logger.WithField("func", "runJob").WithError(err).Error("Could not create result file")
-		return err
+		return false, err
 	}
 	f.Close()
 	f, err = shared.CreateFile(filepath.Join(shared.GetExecDir(), "logs"), jobToStart.Id)
 	if err != nil {
 		jq.logger.WithField("func", "runJob").WithError(err).Error("Could not create log file")
-		return err
+		return false, err
 	}
 	defer f.Close()
 	cmd := jq.generateCommand(jobToStart, filepath.Join("results", resultsFileName), f)
@@ -394,18 +396,18 @@ func (jq *jobRunner) runJob(jobToStart job) error {
 	case err = <-done:
 		if err != nil {
 			jq.logger.WithField("func", "runJob").WithError(err).Error("Error occured during job run")
-			return err
+			return false, err
 		}
-		return nil
+		return true, nil
 	case <-jq.killChan:
 		err := cmd.Process.Kill()
 		jq.killSuccess <- err
 		if err == nil {
 			jq.logger.Info("Job successfully stopped")
-			return nil
+			return false, nil
 		}
 		jq.logger.WithError(err).Error("Error occured while killing process")
-		return err
+		return false, err
 	}
 }
 
