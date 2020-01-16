@@ -1,0 +1,205 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loaddriver-master
+  labels:
+    app: loaddriver-master
+    group: loaddriver
+  namespace: loaddriver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loaddriver-master
+      group: loaddriver
+  template:
+    metadata:
+      labels:
+        app: loaddriver-master
+        group: loaddriver
+    spec:
+      containers:
+        - name: loaddriver-master
+          image: registry.gitlab.com/kasokz/loaddriver-ui/master:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "120m"
+            limits:
+              memory: "256Mi"
+              cpu: "240m"
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: loaddriver-master
+  labels:
+    group: loaddriver
+  namespace: loaddriver
+spec:
+  selector:
+    app: loaddriver-master
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 80
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: loaddriver-master
+  labels:
+    group: loaddriver
+    app: loaddriver-master
+  namespace: loaddriver
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - <HOST_URL>
+      secretName: loaddriver-master-cert-secret
+  rules:
+    - host: <HOST_URL>
+      http:
+        paths:
+          - backend:
+              serviceName: loaddriver-master
+              servicePort: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loaddriver-frontend
+  labels:
+    app: loaddriver-frontend
+    group: loaddriver
+  namespace: loaddriver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loaddriver-frontend
+      group: loaddriver
+  template:
+    metadata:
+      labels:
+        app: loaddriver-frontend
+        group: loaddriver
+    spec:
+      containers:
+        - name: loaddriver-frontend
+          image: registry.gitlab.com/kasokz/loaddriver-ui/frontend:latest
+          imagePullPolicy: Always
+          env:
+            - name: API_ROOT
+              value: "<API_LOCATION>"
+            - name: CONSOLE_URI
+              value: "ws://<API_LOCATION>/jobs/current/output"
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "30m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: loaddriver-frontend
+  labels:
+    group: loaddriver
+  namespace: loaddriver
+spec:
+  selector:
+    app: loaddriver-frontend
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 80
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: loaddriver-frontend
+  labels:
+    group: loaddriver
+    app: loaddriver-frontend
+  namespace: loaddriver
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - <HOST_URL>
+      secretName: loaddriver-frontend-cert-secret
+  rules:
+    - host: <HOST_URL>
+      http:
+        paths:
+          - backend:
+              serviceName: loaddriver-frontend
+              servicePort: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loaddriver-slave
+  labels:
+    app: loaddriver-slave
+    group: loaddriver
+  namespace: loaddriver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loaddriver-slave
+      group: loaddriver
+  template:
+    metadata:
+      labels:
+        app: loaddriver-slave
+        group: loaddriver
+    spec:
+      containers:
+        - name: loaddriver-slave
+          image: registry.gitlab.com/kasokz/loaddriver-ui/slave:latest
+          imagePullPolicy: Always
+          env:
+            - name: REGISTRY_HOST
+              value: "loaddriver-master"
+            - name: REGISTRY_PORT
+              value: "80"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "256m"
+            limits:
+              memory: "512Mi"
+              cpu: "512m"
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: loaddriver-slave
+  labels:
+    group: loaddriver
+  namespace: loaddriver
+spec:
+  selector:
+    app: loaddriver-slave
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 80
+      targetPort: 80
