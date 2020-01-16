@@ -140,6 +140,7 @@ func NewJobRunner(r *mux.Router, consoleChan chan []byte, slaveRegistry *registr
 	}
 	r.HandleFunc("", result.handleGetJobs).Methods(http.MethodGet)
 	r.HandleFunc("", result.handlePostJob).Methods(http.MethodPost)
+	r.HandleFunc("/isRunning", result.handleGetJobsIsRunning).Methods(http.MethodGet)
 	r.HandleFunc("/queued", result.handleGetJobsQueued).Methods(http.MethodGet)
 	r.HandleFunc("/done", result.handleGetJobsDone).Methods(http.MethodGet)
 	r.HandleFunc("/current", result.handleDeleteJobCurrent).Methods(http.MethodDelete)
@@ -182,12 +183,10 @@ func (jq *jobRunner) checkIsRunning() bool {
 	return jq.isRunning
 }
 
-func (jq *jobRunner) handleGetJobsQueued(w http.ResponseWriter, req *http.Request) {
+func (jq *jobRunner) handleGetJobs(w http.ResponseWriter, req *http.Request) {
 	jobs := make([]job, 0)
 	for _, v := range jq.jobsMap {
-		if !v.done {
-			jobs = append(jobs, v.job)
-		}
+		jobs = append(jobs, v.job)
 	}
 	sort.Sort(ByTimeCreated(jobs))
 	resp, err := json.MarshalIndent(jobs, "", "\t")
@@ -199,10 +198,49 @@ func (jq *jobRunner) handleGetJobsQueued(w http.ResponseWriter, req *http.Reques
 	w.Write(resp)
 }
 
-func (jq *jobRunner) handleGetJobs(w http.ResponseWriter, req *http.Request) {
+func (jq *jobRunner) handlePostJob(w http.ResponseWriter, req *http.Request) {
+	if jq.checkIsRunning() {
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
+	var allSlaves []string
+	for _, slave := range jq.slaveRegistry.Slaves {
+		allSlaves = append(allSlaves, string(slave.Location))
+	}
+	postedJob := NewDefaultJob(allSlaves)
+	err := json.NewDecoder(req.Body).Decode(&postedJob)
+	defer req.Body.Close()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	jq.jobsMap[postedJob.Id] = jobMapEntry{postedJob, false}
+	jq.jobQueue.in <- postedJob
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
+}
+
+func (jq *jobRunner) handleGetJobsIsRunning(w http.ResponseWriter, req *http.Request) {
+	result := struct {
+		isRunning bool
+	}{
+		isRunning: jq.checkIsRunning(),
+	}
+	resp, err := json.MarshalIndent(result, "", "\t")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func (jq *jobRunner) handleGetJobsQueued(w http.ResponseWriter, req *http.Request) {
 	jobs := make([]job, 0)
 	for _, v := range jq.jobsMap {
-		jobs = append(jobs, v.job)
+		if !v.done {
+			jobs = append(jobs, v.job)
+		}
 	}
 	sort.Sort(ByTimeCreated(jobs))
 	resp, err := json.MarshalIndent(jobs, "", "\t")
@@ -287,28 +325,6 @@ func (jq *jobRunner) handleGetJobsDone(w http.ResponseWriter, req *http.Request)
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(resp)
-}
-
-func (jq *jobRunner) handlePostJob(w http.ResponseWriter, req *http.Request) {
-	if jq.checkIsRunning() {
-		w.WriteHeader(http.StatusConflict)
-		return
-	}
-	var allSlaves []string
-	for _, slave := range jq.slaveRegistry.Slaves {
-		allSlaves = append(allSlaves, string(slave.Location))
-	}
-	postedJob := NewDefaultJob(allSlaves)
-	err := json.NewDecoder(req.Body).Decode(&postedJob)
-	defer req.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	jq.jobsMap[postedJob.Id] = jobMapEntry{postedJob, false}
-	jq.jobQueue.in <- postedJob
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Add("location", fmt.Sprintf("%s/%s", req.URL.Path, postedJob.Id))
 }
 
 func (jq *jobRunner) handleDeleteJobCurrent(w http.ResponseWriter, r *http.Request) {
