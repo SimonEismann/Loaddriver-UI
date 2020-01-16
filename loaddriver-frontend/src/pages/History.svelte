@@ -12,9 +12,11 @@
   onMount(async () => {
     const response = await fetch(`${API_ROOT}/jobs/done`);
     const json = await response.json();
-    jobs = json.map(
-      job => new Job(job.id, job.slaves, job.scriptName, job.intensityFile)
-    );
+    jobs = json
+      .map(
+        job => new Job(job.id, job.slaves, job.scriptName, job.intensityFile)
+      )
+      .reverse();
   });
 </script>
 
@@ -47,7 +49,7 @@
     <ul>
       {#each jobs as job, i}
         <li>
-          <CollapsibleListElement>
+          <CollapsibleListElement opened={i === 0 ? true : false}>
             <div slot="master">Job #{i + 1}: {job.id}</div>
             <div slot="detail">
               <JobCard {job} />

@@ -2,7 +2,7 @@
   import { slide } from "svelte/transition";
   export let masterStyle = "";
   export let detailStyle = "";
-  let opened = false;
+  export let opened = false;
 </script>
 
 <style>
