@@ -11,19 +11,21 @@
   export let scriptId = null;
   let scriptContent = "";
   let isEditing = false;
+  let initialising = true;
 
   onMount(async () => {
     if (scriptId) {
       isEditing = true;
+      const promise = await fetch(`${API_ROOT}/scripts/${scriptId}`, {
+        headers: {
+          "Content-type": "application/json"
+        },
+        method: "GET",
+        mode: "cors"
+      });
+      scriptContent = await promise.text();
     }
-    const promise = await fetch(`${API_ROOT}/scripts/${scriptId}`, {
-      headers: {
-        "Content-type": "application/json"
-      },
-      method: "GET",
-      mode: "cors"
-    });
-    scriptContent = await promise.text();
+    initialising = false;
   });
 
   const upload = async () => {
@@ -54,7 +56,9 @@
       bind:value={scriptId}
       required="true"
       readonly={isEditing} />
-    <CodeEditor bind:value={scriptContent} />
+    {#if !initialising}
+      <CodeEditor bind:value={scriptContent} />
+    {/if}
     <Button
       value="Save"
       backgroundColor="var(--primary-action-color)"
