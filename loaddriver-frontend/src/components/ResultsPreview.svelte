@@ -13,7 +13,7 @@
 
 <style>
   .container {
-    height: 70vh;
+    max-height: 70vh;
     width: 100%;
     overflow: auto;
     margin-bottom: 1em;
@@ -21,7 +21,6 @@
 
   table {
     width: 100%;
-    margin-bottom: 2em;
     padding: 1em;
     border-spacing: 0;
     table-layout: fixed;

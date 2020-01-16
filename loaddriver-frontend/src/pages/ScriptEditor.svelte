@@ -46,7 +46,9 @@
 </script>
 
 <style>
-
+  .button-group {
+    text-align: end;
+  }
 </style>
 
 <Panel title="Script Editor">
@@ -59,19 +61,21 @@
     {#if !initialising}
       <CodeEditor bind:value={scriptContent} />
     {/if}
-    <Button
-      value="Save"
-      backgroundColor="var(--primary-action-color)"
-      type="submit"
-      icon="fa fa-save"
-      on:click={() => {}} />
-    <Link to="scripts">
+    <div class="button-group">
       <Button
-        value="Cancel"
-        backgroundColor="red"
-        type="button"
-        icon="fa fa-times"
+        value="Save"
+        backgroundColor="var(--primary-action-color)"
+        type="submit"
+        icon="fa fa-save"
         on:click={() => {}} />
-    </Link>
+      <Link to="scripts">
+        <Button
+          value="Cancel"
+          backgroundColor="red"
+          type="button"
+          icon="fa fa-times"
+          on:click={() => {}} />
+      </Link>
+    </div>
   </form>
 </Panel>
