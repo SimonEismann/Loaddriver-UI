@@ -24,7 +24,7 @@
                 id: "main",
                 scaleLabel: {
                   display: true,
-                  labelString: "Requests/second"
+                  labelString: "Requestrate [1/s]"
                 },
                 ticks: {
                   beginAtZero: true
@@ -37,7 +37,7 @@
                 type: "linear",
                 scaleLabel: {
                   display: true,
-                  labelString: "Seconds"
+                  labelString: "Duration [s]"
                 }
               }
             ]
