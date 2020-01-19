@@ -97,7 +97,7 @@
     <div class="cancel-button">
       <Button
         value="Terminate Experiment"
-        icon="fas fa-ban"
+        icon="fa-ban"
         backgroundColor="red"
         on:click={terminateJob} />
     </div>

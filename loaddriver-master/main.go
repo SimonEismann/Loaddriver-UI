@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"loaddriver-master/consoleEcho"
 	log "loaddriver-master/logger"
@@ -36,6 +37,7 @@ func main() {
 	jobRunner := jobs.NewJobRunner(r.PathPrefix("/jobs").Subrouter(), consoleChan, slaveRegistry)
 	r.Handle("/jobs/current/output", hub)
 	r.Handle("/registry", slaveRegistry)
+	r.HandleFunc("/registry/{slave}/logs", handleGetSlaveLogs)
 	r.HandleFunc("/scripts", handleGetAllScriptNames).Queries("names-only", "true").Methods(http.MethodGet)
 	r.HandleFunc("/scripts", handleGetAllScripts).Methods(http.MethodGet)
 	r.HandleFunc("/scripts", handlePostScript).Methods(http.MethodPost)
@@ -57,6 +59,18 @@ func main() {
 	if err != nil {
 		logger.WithField("func", "main").WithError(err).Error("Error starting server")
 	}
+}
+
+func handleGetSlaveLogs(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	slave := vars["slave"]
+	resp, err := http.Get(fmt.Sprintf("http://%s/logs", slave))
+	if err != nil {
+		logger.WithField("func", "handleGetSlaveLogs").WithError(err).Errorf("Error retrieving slave logs from %s", slave)
+		return
+	}
+	defer resp.Body.Close()
+	io.Copy(w, resp.Body)
 }
 
 func handleGetAllScriptNames(w http.ResponseWriter, r *http.Request) {

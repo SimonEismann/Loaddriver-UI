@@ -50,7 +50,7 @@
   </div>
   <div class="buttons">
     <Link to={`scripts/edit/${scriptFile.name}`}>
-      <Button value="Edit" icon="fas fa-edit" />
+      <Button value="Edit" icon="fa-edit" />
     </Link>
     <FileDownloader
       fileName={`${scriptFile.name}`}

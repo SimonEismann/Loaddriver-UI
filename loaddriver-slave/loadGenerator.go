@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"loaddriver-slave/shared"
 	"net/http"
 	"os"
@@ -33,9 +34,12 @@ func startLoadGenerator() {
 		"java",
 		"-jar", filepath.Join(execDir, "httploadgenerator.jar"),
 		"loadgenerator")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Start()
+	f, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	shared.Must(err)
+	defer f.Close()
+	cmd.Stdout = io.MultiWriter(os.Stdout, f)
+	cmd.Stderr = io.MultiWriter(os.Stderr, f)
+	err = cmd.Start()
 	shared.Must(err)
 	<-stopChan
 	err = cmd.Process.Kill()
