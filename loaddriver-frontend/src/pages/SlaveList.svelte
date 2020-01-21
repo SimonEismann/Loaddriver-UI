@@ -2,8 +2,10 @@
   import Panel from "../components/Panel.svelte";
   import FileDownloader from "../components/FileDownloader.svelte";
   import Button from "../components/form/Button.svelte";
+  import TextPreview from "../components/TextPreview.svelte";
   import { onMount, onDestroy } from "svelte";
   import { API_ROOT } from "../env.js";
+  import { open } from "../layout/Modal.svelte";
 
   let slaves = null;
   let interval = null;
@@ -96,7 +98,7 @@
         <th>Location</th>
         <th>Last Heartbeat</th>
         <th>Health</th>
-        <th>Actions</th>
+        <th>Logs</th>
       </tr>
     </thead>
     <tbody>
@@ -117,12 +119,22 @@
                 class:unhealthy={!isHealthy(slave.lastUpdate)} />
             </td>
             <td>
+              <Button
+                value="Show"
+                icon="fa-file-alt"
+                backgroundColor="#0A69D9"
+                on:click={() => {
+                  open(TextPreview, `Logs from slave ${slave.location}`, {
+                    url: `${API_ROOT}/registry/${slave.location}/logs`,
+                    filename: `${slave.location}-logs.txt`
+                  });
+                }} />
               <FileDownloader
                 fileName={`${slave.location}-logs.txt`}
                 url={`${API_ROOT}/registry/${slave.location}/logs`}>
                 <Button
                   backgroundColor="#0A69D9"
-                  value="Download Logs"
+                  value="Download"
                   icon="fa-download" />
               </FileDownloader>
             </td>

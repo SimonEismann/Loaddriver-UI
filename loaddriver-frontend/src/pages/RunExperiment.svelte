@@ -2,6 +2,7 @@
   import Button from "../components/form/Button.svelte";
   import JobForm from "../components/JobForm.svelte";
   import ConsoleReader from "../components/ConsoleReader.svelte";
+  import HistoryRedirect from "../components/HistoryRedirect.svelte";
   import ProgressIndicatorBar from "../components/ProgressIndicatorBar.svelte";
   import Panel from "../components/Panel.svelte";
   import { open } from "../layout/Modal.svelte";
@@ -105,7 +106,7 @@
   <div class="console">
     <ConsoleReader
       on:finished={() => {
-        navigate('/history');
+        open(HistoryRedirect, 'Experiment finished!', null);
       }} />
   </div>
 </Panel>
