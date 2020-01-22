@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"loaddriver-master/consoleEcho"
 	log "loaddriver-master/logger"
+	"loaddriver-master/pkg/custom"
 	"loaddriver-master/pkg/jobs"
 	"loaddriver-master/pkg/registry"
 	"loaddriver-master/shared"
@@ -46,8 +47,8 @@ func main() {
 	r.HandleFunc("/intensities", handleGetAllIntensities).Methods(http.MethodGet)
 	r.HandleFunc("/intensities", handlePostIntensity).Methods(http.MethodPost)
 	r.HandleFunc("/intensities/{fileName}", handleDeleteIntensity).Methods(http.MethodDelete)
-	r.PathPrefix("/intensities/").Handler(http.StripPrefix("/intensities/", http.FileServer(http.Dir("./intensities/"))))
-	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts/"))))
+	r.PathPrefix("/intensities/").Handler(http.StripPrefix("/intensities/", custom.FileServer(http.Dir("./intensities/"))))
+	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", custom.FileServer(http.Dir("./scripts/"))))
 	go hub.Run()
 	go jobRunner.Start()
 	go slaveRegistry.StartCleanUpRoutine()
