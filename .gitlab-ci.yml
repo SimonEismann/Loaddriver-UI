@@ -84,6 +84,6 @@ deploy-prod:
   only:
     - master
   script:
-    - kubectl -n loaddriver set image deployment/loaddriver-frontend app=$IMAGE_TAG_FRONTEND_STABLE --record
-    - kubectl -n loaddriver set image deployment/loaddriver-master app=$IMAGE_TAG_MASTER_STABLE --record
-    - kubectl -n loaddriver set image deployment/loaddriver-slave app=$IMAGE_TAG_SLAVE_STABLE --record
+    - kubectl -n loaddriver set image deployment/loaddriver-frontend app=$IMAGE_TAG_FRONTEND:$CI_COMMIT_SHA --record
+    - kubectl -n loaddriver set image deployment/loaddriver-master app=$IMAGE_TAG_MASTER:$CI_COMMIT_SHA --record
+    - kubectl -n loaddriver set image deployment/loaddriver-slave app=$IMAGE_TAG_SLAVE:$CI_COMMIT_SHA --record
