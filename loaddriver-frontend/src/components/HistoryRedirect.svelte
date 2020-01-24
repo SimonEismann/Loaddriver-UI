@@ -7,12 +7,13 @@
 
   let timeLeft = 5;
   let interval;
+  let timeout;
 
   onMount(() => {
     interval = setInterval(() => {
       timeLeft = timeLeft - 1;
     }, 1000);
-    setTimeout(() => {
+    timeout = setTimeout(() => {
       navigate("history");
       close();
     }, 5000);
@@ -20,6 +21,7 @@
 
   onDestroy(() => {
     clearInterval(interval);
+    clearTimeout(timeout);
   });
 </script>
 
