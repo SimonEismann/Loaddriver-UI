@@ -14,7 +14,19 @@
     const json = await response.json();
     jobs = json
       .map(
-        job => new Job(job.id, job.slaves, job.scriptName, job.intensityFile)
+        job =>
+          new Job(
+            job.id,
+            job.slaves,
+            job.scriptName,
+            job.intensityFile,
+            job.warmupDuration,
+            job.warmupPause,
+            job.warmupRate,
+            job.threads,
+            job.timeout,
+            job.randomizeUsers
+          )
       )
       .reverse();
   });

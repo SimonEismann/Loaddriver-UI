@@ -206,7 +206,10 @@
           });
         }} />
       <FileDownloader fileName={logFileName} url={logURL}>
-        <Button backgroundColor="#0A69D9" value="Download Logs" icon="fa-download" />
+        <Button
+          backgroundColor="#0A69D9"
+          value="Download Logs"
+          icon="fa-download" />
       </FileDownloader>
     </div>
     <div class="button-group__results">
@@ -220,7 +223,10 @@
             results: results
           })} />
       <FileDownloader fileName={resultsFileName} url={resultsURL}>
-        <Button backgroundColor="#1E6C41" value="Download Results" icon="fa-download" />
+        <Button
+          backgroundColor="#1E6C41"
+          value="Download Results"
+          icon="fa-download" />
       </FileDownloader>
     </div>
   </div>
