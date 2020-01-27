@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: loaddriver-master
-          image: registry.gitlab.com/kasokz/loaddriver-ui/master:latest
+          image: simoneismann/loaddriver-master:latest
           imagePullPolicy: Always
           resources:
             requests:
@@ -93,7 +93,7 @@ spec:
     spec:
       containers:
         - name: loaddriver-frontend
-          image: registry.gitlab.com/kasokz/loaddriver-ui/frontend:latest
+          image: simoneismann/loaddriver-frontend:latest
           imagePullPolicy: Always
           env:
             - name: API_ROOT
@@ -172,7 +172,7 @@ spec:
     spec:
       containers:
         - name: loaddriver-slave
-          image: registry.gitlab.com/kasokz/loaddriver-ui/slave:latest
+          image: simoneismann/loaddriver-slave:latest
           imagePullPolicy: Always
           env:
             - name: REGISTRY_HOST
