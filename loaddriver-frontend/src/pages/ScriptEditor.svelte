@@ -18,7 +18,9 @@
       isEditing = true;
       const promise = await fetch(`${API_ROOT}/scripts/${scriptId}`, {
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "application/json",
+          "cache-control": "no-cache",
+          pragma: "no-cache"
         },
         method: "GET",
         mode: "cors"

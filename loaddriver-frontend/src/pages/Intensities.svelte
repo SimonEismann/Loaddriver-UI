@@ -38,7 +38,9 @@
     try {
       const promise = await fetch(`${API_ROOT}/intensities`, {
         headers: {
-          "Content-type": "application/json"
+          "content-type": "application/json",
+          "cache-control": "no-cache",
+          pragma: "no-cache"
         },
         method: "GET",
         mode: "cors"
