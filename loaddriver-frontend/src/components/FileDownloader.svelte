@@ -5,10 +5,6 @@
   const handleClick = async () => {
     try {
       const response = await fetch(url, {
-        headers: {
-          "cache-control": "no-cache",
-          pragma: "no-cache"
-        },
         mode: "cors"
       });
       const fileContent = await response.blob();
