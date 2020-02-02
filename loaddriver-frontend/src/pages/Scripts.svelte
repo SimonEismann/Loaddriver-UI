@@ -23,7 +23,8 @@
           "Content-type": "application/json"
         },
         method: "GET",
-        mode: "cors"
+        mode: "cors",
+        cache: "no-cache"
       });
       availableScripts = await promise.json();
     } catch (error) {

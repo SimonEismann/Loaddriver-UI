@@ -18,10 +18,11 @@
       isEditing = true;
       const promise = await fetch(`${API_ROOT}/scripts/${scriptId}`, {
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "text/plain"
         },
         method: "GET",
-        mode: "cors"
+        mode: "cors",
+        cache: "no-cache"
       });
       scriptContent = await promise.text();
     }

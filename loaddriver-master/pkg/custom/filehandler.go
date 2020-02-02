@@ -2,17 +2,45 @@ package custom
 
 import (
 	"net/http"
+	"time"
 )
 
-type customFileServer struct {
-	Handler http.Handler
+var epoch = time.Unix(0, 0).Format(time.RFC1123)
+
+var noCacheHeaders = map[string]string{
+	"Expires":         epoch,
+	"Cache-Control":   "no-cache, private, max-age=0",
+	"Pragma":          "no-cache",
+	"X-Accel-Expires": "0",
 }
 
-func FileServer(root http.FileSystem) *customFileServer {
-	return &customFileServer{Handler: http.FileServer(root)}
+var etagHeaders = []string{
+	"ETag",
+	"If-Modified-Since",
+	"If-Match",
+	"If-None-Match",
+	"If-Range",
+	"If-Unmodified-Since",
 }
 
-func (c *customFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c.Handler.ServeHTTP(w, r)
-	w.Header().Add("Cache-Control", "no-cache")
+//NoCache returns a custom http.Handler that does not allow caching resources
+//(taken from https://stackoverflow.com/questions/33880343/go-webserver-dont-cache-files-using-timestamp)
+func NoCache(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		// Delete any ETag headers that may have been set
+		for _, v := range etagHeaders {
+			if r.Header.Get(v) != "" {
+				r.Header.Del(v)
+			}
+		}
+
+		// Set our NoCache headers
+		for k, v := range noCacheHeaders {
+			w.Header().Set(k, v)
+		}
+
+		h.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
 }
