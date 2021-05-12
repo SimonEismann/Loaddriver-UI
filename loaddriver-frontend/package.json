@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "chart.js": "^2.8.0",
-    "codemirror": "^5.48.4",
+    "codemirror": "^5.58.2",
     "express": "^4.17.1",
     "sirv-cli": "^0.4.4"
   },
